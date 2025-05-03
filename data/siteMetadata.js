@@ -1,7 +1,7 @@
 const siteMetadata = {
-  title: 'Karan Pratap Singh',
-  author: 'Karan Pratap Singh',
-  headerTitle: 'Karan Pratap Singh',
+  title: 'Santosh Luitel',
+  author: 'Santosh Luitel',
+  headerTitle: 'Santosh Luitel',
   description:
     'A software engineer who aims to evolve, innovate, and inspire through technology.',
   language: 'en-us',

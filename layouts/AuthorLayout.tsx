@@ -14,7 +14,7 @@ interface Props {
 }
 
 export default function AuthorLayout({ children, frontMatter }: Props) {
-  const { name, avatar, occupation, company, resume } = frontMatter;
+  const { name, avatar, occupation, resume } = frontMatter;
   const [resumeColor] = useRandomColorPair();
 
   return (
@@ -23,13 +23,16 @@ export default function AuthorLayout({ children, frontMatter }: Props) {
       <div className='fade-in divide-y-2 divide-gray-100 dark:divide-gray-800'>
         <Header title='About' />
         <div className='items-start space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-8 xl:space-y-0'>
-          <div className='flex flex-col items-center space-x-2 pt-8'>
+          {/* Avatar & Basic Info */}
+          <div className='flex flex-col items-center space-y-2 pt-8'>
             <Image
               src={avatar}
               alt='avatar'
-              width='192px'
-              height='192px'
-              className='h-48 w-48 rounded-full'
+              width={192}
+              height={192}
+              quality={100}
+              priority
+              className='rounded-full object-cover'
             />
             <h3 className='pt-4 pb-2 text-2xl font-bold leading-8 tracking-tight'>
               {name}
@@ -37,34 +40,46 @@ export default function AuthorLayout({ children, frontMatter }: Props) {
             <div className='font-medium text-gray-500 dark:text-gray-400'>
               {occupation}
             </div>
-            <div className='text-gray-500 dark:text-gray-400'>{company}</div>
           </div>
 
-          <div className='prose max-w-none pt-8 pb-8 dark:prose-dark xl:col-span-2'>
+          {/* Content & Resume & Skills */}
+          <div className='prose max-w-none pt-8 pb-8 font-bold dark:prose-dark xl:col-span-2'>
             {children}
+
+            {/* Resume link */}
             <p className='mt-8'>
-              <a
-                className='!font-normal !text-black !no-underline dark:!text-white'
-                href={resume}
-                target='_blank'
-                rel='noreferrer'
+              <RoughNotation
+                show
+                type='box'
+                animationDelay={250}
+                animationDuration={2000}
+                strokeWidth={2}
+                color={resumeColor}
               >
-                <RoughNotation
-                  show
-                  type='box'
-                  animationDelay={250}
-                  animationDuration={2000}
-                  strokeWidth={2}
-                  color={resumeColor}
+                <a
+                  href={resume}
+                  target='_blank'
+                  rel='noreferrer'
+                  className='
+                    inline-block
+                    !font-normal
+                    !text-black !no-underline
+                    transition-transform
+                    transition-colors duration-200 hover:scale-125
+                    hover:!text-indigo-600
+                    dark:!text-white dark:hover:!text-indigo-300
+                  '
                 >
                   Resume
-                </RoughNotation>
-              </a>
-              <h2 className='mt-8 mb-4 text-2xl font-semibold dark:text-white'>
-                Skills
-              </h2>
-              <StackList stack={WorkStack} />
+                </a>
+              </RoughNotation>
             </p>
+
+            {/* Skills */}
+            <h2 className='mt-8 mb-4 text-2xl font-semibold dark:text-white'>
+              Skills
+            </h2>
+            <StackList stack={WorkStack} />
           </div>
         </div>
       </div>

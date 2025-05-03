@@ -1,22 +1,25 @@
 ---
-name: Karan Pratap Singh
-shortname: Karan
-avatar: /static/avatar.jpg
-occupation: Cloud Engineer
-company: Apple
-resume: /static/karan_resume.pdf
-email: contact@karanpratapsingh.com
-twitter: https://twitter.com/karan_6864
-linkedin: https://www.linkedin.com/in/karan99
-github: https://github.com/karanpratapsingh
+name: Santosh Luitel
+shortname: Santosh Luitel
+avatar: /static/profile.jpg
+occupation: Software Engineer | AI Enthusiast
+resume: /static/Resume.pdf
+email: santoshluitel19@outlook.com
+website: https://luitelsantosh.com.np
+linkedin: https://www.linkedin.com/in/santosh-luitel-b31b62201/
+github: https://github.com/santosh5541
 ---
 
-A software engineer who aims to evolve, innovate, and inspire through technology.
+Tech‑savvy software engineer with expertise in backend and frontend development, microservices, network security, and AI. Currently pursuing an M.S. in Computer Science at the University of South Dakota.
 
-Currently, I am working as a **Cloud Engineer** at **Apple**.
+Software Engineer – F1Soft International Pvt. Ltd. (Oct 2024 – Dec 2024)
+Developed and maintained mobile banking applications using AngularJS for the front‑end and Java/Spring Boot microservices for the back‑end. Integrated Spring Security and performance optimizations.
 
-Previously, I was a Senior Software Engineer at [Guardian Life](https://www.guardianlife.com), and a Senior Engineer at [Curebase](https://www.curebase.com) where I contributed to the creation of a decentralized clinical trial platform and scaling infrastructure with an emphasis on security, HIPAA compliance, and GDPR compliance.
+Software Engineer – Code Fusion Technologies Pvt. Ltd. (May 2023 – Oct 2024)
+Designed and implemented microservices architectures with Java, Spring Boot, and MongoDB. Managed deployments on Linux servers and cloud platforms.
 
-Prior to that, I worked with the Digitization Program Office (DPO) at the [Smithsonian Institution](https://www.si.edu) as a consulting Software Developer in collaboration with the Office of the Chief Information Officer (OCIO).
+Network Administrator & Java Software Engineer – NIC ASIA Capital Ltd. (Dec 2022 – Apr 2023)
+Built Java web applications using Spring Framework and Hibernate; created RESTful services, automated testing with Selenium, and monitored firewalls and network devices to maintain security.
 
-Outside of work, I've written more than 50 technical articles that have received over 1 million views. I've self-published two books, worked on US patents, and made contributions to open-source projects like Meta's [React Native (v0.60)](https://reactnative.dev/blog/2019/06/12/react-native-open-source-update).
+IT Support Engineer – Casino Palace Ltd. (Feb 2022 – Nov 2022)
+Configured and troubleshot network devices (APs, firewalls), debugged Java applications, maintained databases, and ensured high availability and security of the IT infrastructure.

@@ -1,266 +1,156 @@
 import { Maybe, Tuple } from '../types';
 import { Stack } from './stack';
 
-export type Deployment = {
-  web?: string;
-  android?: string;
-  ios?: string;
-};
-
 export interface SubProject {
   title: string;
   description: string;
   repository: Maybe<string>;
-  deployment: Deployment;
 }
-
 export const defaultDimensions: Tuple<number> = [450, 220];
 
 export interface Project {
   title: string;
   slug: string;
-  website: string;
   banner: string;
   description: string;
   shortDescription?: string;
   repository: Maybe<string>;
   stack: Stack[];
-  dimensions?: Tuple<number>; // Tuple of [height, width]
-  screenshots: string[];
-  deployment: Deployment;
   subProjects: SubProject[];
 }
 
 export const projects: Project[] = [
   {
-    title: 'HyperTrade',
-    slug: 'hypertrade',
-    banner: '/static/projects/hypertrade/banner.png',
-    website: 'https://github.com/karanpratapsingh/HyperTrade',
+    title: 'MRI DETECTION SYSTEM',
+    slug: 'MRI',
+    banner: '/static/projects/mri/banner.png',
     description:
-      'Ready to deploy, distributed cryptocurrency trading bot. The idea of this project originally came from a script I used to automate buying and selling of fiat assets. I was curious and wanted to scale it into a real system which can execute trades for me. I had a lot of fun building this. I got to play with lots of different technologies while growing my financial knowledge.',
-    shortDescription:
-      'Ready to deploy, distributed cryptocurrency trading bot.',
-    repository: 'https://github.com/karanpratapsingh/HyperTrade',
+      'This project implements an end‑to‑end MRI tumor detection pipeline using transfer learning with the VGG16 convolutional backbone. Starting from raw scan images, it resizes and normalizes each slice, applies on‑the‑fly augmentations to enrich the training set, and then feeds them into a custom classifier head built atop the frozen VGG16 feature extractor (with the last few convolutional layers fine‑tuned for MRI texture). The model is compiled with an Adam optimizer and trained over multiple epochs using a data generator to manage memory, after which it’s evaluated on held‑out scans. Finally, a utility function loads new MRI images, runs inference to predict “Tumor: <type>” or “No Tumor,” and displays each scan with its confidence score—providing a streamlined tool for rapid, automated tumor screening.',
+    // shortDescription:
+    //   'Ready to deploy, distributed cryptocurrency trading bot.',
+    repository: 'https://github.com/santosh5541/MRISYSTEM',
     stack: [
-      Stack.nats,
-      Stack.go,
-      Stack.typescript,
-      Stack.react,
       Stack.python,
-      Stack.kubernetes,
-      Stack.docker,
+      Stack.flask,
+      Stack.tensorflow,
+      Stack.numpy,
+      Stack.pillow,
+      Stack.jinja2,
+      Stack.html,
+      Stack.css,
+      Stack.jupyter,
     ],
-    dimensions: [360, 640],
-    screenshots: [
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fhypertrade%2Fcharts.png?alt=media&token=62c42939-9371-4413-b85d-f2dd3b4534ca',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fhypertrade%2Fdataframe.png?alt=media&token=f2e6523c-c9de-4fde-8fb3-434c74eb20d8',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fhypertrade%2Fportfolio.png?alt=media&token=8f4e3da1-2dc2-4382-9fc8-1fbc18a98146',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fhypertrade%2Fconfig.png?alt=media&token=f619b1da-47d5-4c33-b4d0-368adaead1c8',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fhypertrade%2Fconfig-strategy.png?alt=media&token=68693230-4fce-420b-b419-d211a9568dc5',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fhypertrade%2Fcharts-indicators.png?alt=media&token=21c7875f-5abe-4ceb-8057-4d7a70b67d33',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fhypertrade%2Ftelegram.png?alt=media&token=110874dd-fb96-4dd2-b299-12a62b092a04',
-    ],
-    deployment: {
-      web: 'https://github.com/karanpratapsingh/HyperTrade',
-    },
     subProjects: [],
   },
   {
-    title: 'Peapods',
-    slug: 'peapods',
-    banner: '/static/projects/peapods/banner.png',
-    website: 'https://peapods.com',
-    description: `Peapods is a new type of decentralized social network that values real human interaction. The platform helps you become closer with your friends and make new ones. We value kindness, friendship, user privacy, and genuine connection. Together we can cure boredom, conquer loneliness, and fulfill the original promise of the internet to connect us in ways that matter.`,
-    shortDescription:
-      'Peapods is a new type of decentralized social network that values real human interaction.',
-    repository: null,
+    title: 'HVAC SYSTEM',
+    slug: 'HVAC System',
+    banner: '/static/projects/hvac/banner.png',
+    description: `I developed a reinforcement-learning-based HVAC control system that learns optimal temperature-setpoint policies by interacting with a simulated building environment. I started by implementing a physics-informed thermal model and a rule-based controller, then I trained DQN, DDQN, SAC, and PPO agents using OpenAI Gym and Stable-Baselines3. I tuned hyperparameters through random search, grid search, and Bayesian optimization to maximize energy savings while ensuring indoor temperatures stayed within comfort bounds. In my experiments, the PPO agent (with grid-search tuning) performed best—achieving about 41.5 kWh of energy savings, keeping temperature deviations under 3.6 °C, and reducing HVAC costs by roughly $4,150 over the testing period. To prevent overfitting, I incorporated dropout, L2 weight decay, and early stopping, and my comparative analysis across algorithms highlights how careful reward design and parameter selection drive both efficiency and comfort in smart-building control.`, // shortDescription:
+    //   'Peapods is a new type of decentralized social network that values real human interaction.',
+    repository: 'https://github.com/amalsha27/RL-Project',
     stack: [
-      Stack.javascript,
-      Stack.react,
-      Stack.node,
-      Stack.graphql,
-      Stack.aws,
-      Stack.arangodb,
+      Stack.python,
+      Stack.jupyter,
+      Stack.tensorflow,
+      Stack.numpy,
+      Stack.pandas,
     ],
-    screenshots: [],
-    deployment: {
-      web: 'https://peapods.com',
-    },
     subProjects: [],
   },
   {
-    title: 'Proximity',
-    slug: 'proximity',
-    website: 'https://proximity-mobile.web.app',
-    banner: '/static/projects/proximity/banner.jpeg',
+    title: 'Movie Recommendation System',
+    slug: 'MRS',
+    banner: '/static/projects/mrc/mrc.png',
     description:
-      'An open source social media app that does not use your data against you.',
-    repository: 'https://github.com/karanpratapsingh/Proximity',
+      'I built a content‑based movie recommendation engine in Python using the TMDB 5000 Movies and Credits datasets. I first merged each film’s metadata with its cast and crew details in pandas, then combined key textual features (overview, genres, keywords, cast, crew) into a unified “tags” field. After lowercasing and stemming with NLTK’s PorterStemmer, I vectorized those tags using scikit‑learn’s CountVectorizer (capped at 5,000 terms) and computed a cosine‑similarity matrix over the resulting feature vectors. I wrapped the core recommend(movie_title) function— which looks up a movie’s index, sorts its similarity scores, and returns the top five matches—inside a Streamlit app. In the UI, users can type or select a title, click “Recommend,” and instantly see poster images, titles, and overviews of their five most similar films',
+    repository: 'https://github.com/santosh5541/movierecommendation',
     stack: [
-      Stack.typescript,
-      Stack.reactnative,
-      Stack.node,
-      Stack.graphql,
-      Stack.postgres,
+      Stack.python,
+      Stack.pandas,
+      Stack.numpy,
+      Stack.nltk,
+      Stack.scikit_learn,
+      Stack.streamlit,
     ],
-    screenshots: [
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fproximity%2Fscreenshots%2Fscreenshot-1.png?alt=media&token=a9b5a094-8a16-4c84-af16-65bf2378d7d9',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fproximity%2Fscreenshots%2Fscreenshot-2.png?alt=media&token=fca4c07e-c922-445e-a259-a06c038e0974',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fproximity%2Fscreenshots%2Fscreenshot-3.png?alt=media&token=31dafec8-fc20-4d6f-96e7-312a4c847ac5',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fproximity%2Fscreenshots%2Fscreenshot-4-.png?alt=media&token=4067a226-5b7b-4ffa-859e-401323a864c4',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fproximity%2Fscreenshots%2Fscreenshot-5.png?alt=media&token=c349a959-ab54-4e2d-8f8e-2393466bb5c0',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fproximity%2Fscreenshots%2Fscreenshot-6.png?alt=media&token=f2c25e34-38e8-4886-b247-dc6f270c36d0',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fproximity%2Fscreenshots%2Fscreenshot-7.png?alt=media&token=2af284b0-4266-4072-a900-cc9ef8521f74',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fproximity%2Fscreenshots%2Fscreenshot-8.png?alt=media&token=e041e4bd-50fc-49a7-8a22-f6e98d3e1bc6',
-    ],
-    deployment: {
-      web: 'https://proximity-mobile.web.app',
-      android:
-        'https://play.google.com/store/apps/details?id=com.proximity.app',
-      ios: 'https://apps.apple.com/us/app/proximity-app/id1489041006',
-    },
     subProjects: [],
   },
   {
-    title: 'Velvet Live',
-    slug: 'velvet-live',
-    banner: '/static/projects/velvet-live/banner.png',
-    website: 'https://boom.london',
-    description: `Connect with shoppers who need your advice and expertise when they're shopping online. Assist and sell to customers the same way you would in-store, but now through chat and video straight from the app.`,
-    repository: null,
-    stack: [
-      Stack.javascript,
-      Stack.react,
-      Stack.reactnative,
-      Stack.graphql,
-      Stack.gcp,
-    ],
-    screenshots: [
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fvelvet%2Fscreenshots%2Fscreenshot-1.png?alt=media&token=b9b044ce-a3af-402f-a1db-1ae61621bb18',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fvelvet%2Fscreenshots%2Fscreenshot-2.png?alt=media&token=f551d87b-4f74-4d06-b81e-50ea8bf7feba',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fvelvet%2Fscreenshots%2Fscreenshot-5.png?alt=media&token=4f68239e-db81-43cc-b3a4-1a8642cfe4eb',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fvelvet%2Fscreenshots%2Fscreenshot-6.png?alt=media&token=5655d6e8-99d4-4c40-9782-ce12efeab256',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fvelvet%2Fscreenshots%2Fscreenshot-7.png?alt=media&token=32c12b1e-8e32-4d45-9001-9482d26bdaaf',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fvelvet%2Fscreenshots%2Fscreenshot-3.png?alt=media&token=609b7e74-8349-48ec-bcc0-4b0071dfb9b6',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fvelvet%2Fscreenshots%2Fscreenshot-8.png?alt=media&token=91880856-7288-420c-abb9-c1923f7ccd57',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fvelvet%2Fscreenshots%2Fscreenshot-4.png?alt=media&token=3dcdc3bd-cbb7-4d8e-9368-306158cce40d',
-    ],
-    deployment: {
-      web: 'https://boom.london',
-      android: 'https://play.google.com/store/apps/details?id=app.boom.mobile',
-    },
+    title: 'Power Plant System',
+    slug: 'Power Plant',
+    banner: '/static/projects/powerplant/pps.png',
+    description: `The core motive behind this Power‑Plant project is to give teams a simple, self‑contained microservice for managing and querying battery asset data. By exposing a RESTful API backed by MongoDB, it lets you:
+
+    Ingest new battery records (name, capacity, size, location, etc.)
+
+    Query those records by postcode range, so you can quickly see which batteries serve which regions
+
+    Integrate effortlessly with dashboards or automation pipelines via a well‑documented Swagger UI
+
+In short, it was built to centralize your battery data into one lightweight service—making it easy to onboard new data sources, explore stored records, and drive energy‑management decisions without wrestling with low‑level database or deployment details.`,
+    repository: 'https://github.com/santosh5541/Power-Plant',
+    stack: [Stack.java, Stack.sql, Stack.mongo, Stack.Restapi],
     subProjects: [],
   },
   {
-    title: 'Stewards',
-    slug: 'stewards',
-    website: 'https://stewards.app',
-    repository: null,
-    banner: '/static/projects/stewards/banner.png',
+    title: 'Inventory Management System',
+    slug: 'IMS',
+    repository: 'https://github.com/santosh5541/imsfinal',
+    banner: '/static/projects/ims/ims.png',
     description:
-      'Mobile ordering solution with robot delivery. Stewards also provides variety of tools like staff application to manage orders, self checkout solution and admin dashboard.',
-    stack: [
-      Stack.javascript,
-      Stack.react,
-      Stack.reactnative,
-      Stack.graphql,
-      Stack.gcp,
-    ],
-    screenshots: [
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fstewards%2Fscreenshots%2Fscreenshot-1.png?alt=media&token=ba9d7163-8df6-43ae-b804-01cd221cc593',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fstewards%2Fscreenshots%2Fscreenshot-2.png?alt=media&token=c8194dc7-08cf-4b8c-a3ad-f6c643291a95',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fstewards%2Fscreenshots%2Fscreenshot-3.png?alt=media&token=37c14308-767c-41c7-a064-df8b63cd18e8',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fstewards%2Fscreenshots%2Fscreenshot-4.png?alt=media&token=6ad6b4f6-ba09-423d-bd3f-b06ae093113a',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fstewards%2Fscreenshots%2Fscreenshot-5.png?alt=media&token=cd2945c0-af97-4b3d-a503-d52174232a8e',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fstewards%2Fscreenshots%2Fscreenshot-6.png?alt=media&token=6fcaeab6-d539-4f39-9985-e6ee85e28f0a',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fstewards%2Fscreenshots%2Fscreenshot-7.png?alt=media&token=3c1fcd3e-4d93-4275-8d87-94a9b9236a9d',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fstewards%2Fscreenshots%2Fscreenshot-8.png?alt=media&token=9733914a-61a9-41ed-b715-3334ca425588',
-    ],
-    deployment: {
-      web: 'https://stewards.app',
-      android:
-        'https://play.google.com/store/apps/details?id=app.stewards.customer',
-      ios: 'https://apps.apple.com/in/app/stewards-order-to-your-desk/id1479412118',
-    },
+      'This project is an “Inventory Management System” backend built with Spring Boot (parent 2.7.1) under the group com.inventory and artifact inventory-backend, designed to centralize product and stock control in a MySQL database via Spring Data JPA. It exposes RESTful endpoints (via spring‑boot‑starter‑web) that validate input with Hibernate Validator, map between DTOs and entities using ModelMapper, and secure access through Spring Security with JWT tokens. For operational workflows it integrates Razorpay’s Java SDK for payment processing, allows CSV import/export of inventory data via OpenCSV, and leverages Lombok to reduce boilerplate. A comprehensive test suite is included with spring‑boot‑starter‑test, making IMSFinal a production‑ready microservice for robust, secure inventory tracking and transaction handling.',
+    stack: [Stack.java, Stack.sql, Stack.Restapi, Stack.react],
     subProjects: [
-      {
-        title: 'Staff Management',
-        repository: null,
-        description:
-          'Staff app for stewards restaurant staff, easily update menu, product availability and take live orders from customers.',
-        deployment: {
-          android:
-            'https://play.google.com/store/apps/details?id=app.stewards.staff&hl=en',
-        },
-      },
-      {
-        title: 'Admin Dashboard',
-        repository: null,
-        description:
-          'Staff administration app for stewards restaurant partners. This helps restaurant administrators to easily manage orders, receipts, tables, restaurant info etc.',
-        deployment: {
-          web: 'https://manage.stewards.app',
-        },
-      },
-      {
-        title: 'Self Checkout',
-        repository: null,
-        description:
-          "Stewards self checkout solution for customers who don't like waiting. Available on demand for iPad and tablets.",
-        deployment: {},
-      },
+      // {
+      //   title: 'Staff Management',
+      //   repository: null,
+      //   description:
+      //     'Staff app for stewards restaurant staff, easily update menu, product availability and take live orders from customers.',
+      // },
+      // {
+      //   title: 'Admin Dashboard',
+      //   repository: null,
+      //   description:
+      //     'Staff administration app for stewards restaurant partners. This helps restaurant administrators to easily manage orders, receipts, tables, restaurant info etc.',
+      // },
+      // {
+      //   title: 'Self Checkout',
+      //   repository: null,
+      //   description:
+      //     "Stewards self checkout solution for customers who don't like waiting. Available on demand for iPad and tablets.",
+      // },
     ],
   },
   {
-    title: 'Celebrify',
-    slug: 'celebrify',
-    website: 'https://celebrify.in',
-    banner: '/static/projects/celebrify/banner.jpeg',
+    title: 'Wallet Transaction System',
+    slug: 'WTS',
+    banner: '/static/projects/wts/wts.png',
     description:
-      'Get personalized videos from your favorite celebrities at just one click. Request personalized video messages for your friends, family, loved ones or even yourself. Be it a doubt or even a special wish from your favorite celebrity.',
-    repository: null,
-    stack: [Stack.react, Stack.reactnative, Stack.django, Stack.aws],
-    dimensions: [450, 270],
-    screenshots: [
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fcelebrify%2Fscreenshots%2Fscreenshot-1.png?alt=media&token=93fffd15-08ca-4ffc-8fce-47bc269237ee',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fcelebrify%2Fscreenshots%2Fscreenshot-2.png?alt=media&token=fd597baf-3aaa-4ad8-abe9-1d42c628285f',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fcelebrify%2Fscreenshots%2Fscreenshot-3.png?alt=media&token=779ea419-adb0-4f62-8ef7-dcfa8d9a4228',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fcelebrify%2Fscreenshots%2Fscreenshot-4.png?alt=media&token=e77b8603-4885-4eed-b108-f9f4bb751796',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fcelebrify%2Fscreenshots%2Fscreenshot-5.png?alt=media&token=94f43db6-c835-404d-ab35-85ddad624a06',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fcelebrify%2Fscreenshots%2Fscreenshot-6.png?alt=media&token=7794ae58-7e3a-45c5-a47a-6c86b909e423',
-    ],
-    deployment: {
-      web: 'https://celebrify.in',
-      android:
-        'https://play.google.com/store/apps/details?id=com.celebrify.app',
-      ios: 'https://apps.apple.com/us/app/celebrify-app/id1469588198',
-    },
+      'This transaction_project is a Maven‑managed Java application that implements a wallet‑transaction system. It centralizes all wallet operations—deposits, withdrawals and peer‑to‑peer transfers—behind a clean programmatic API, validating each request, atomically updating user balances and logging every action for full auditability. By relying on a Maven wrapper and pom.xml, it ensures consistent builds and dependency management, making it easy to integrate into larger financial‑services pipelines and client applications',
+    repository: 'https://github.com/santosh5541/transaction_project',
+    stack: [Stack.java, Stack.sql, Stack.react, Stack.kafka, Stack.redis],
     subProjects: [],
   },
   {
-    title: 'KCards',
-    slug: 'kcards',
-    banner: '/static/projects/kcards/banner.jpeg',
+    title: 'Student Management System',
+    slug: 'SMS',
+    banner: '/static/projects/sms/sms.png',
     description:
-      'KCards is your one-stop replacement for paper cards. KCards help you to easily share your cards with other users and get real-time analytics on the shared cards.',
-    repository: 'https://github.com/karanpratapsingh/KCards',
-    stack: [Stack.react, Stack.reactnative, Stack.node, Stack.mongo],
-    dimensions: [450, 270],
-    screenshots: [
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fkcards%2Fscreenshots%2Fscreenshot-1.png?alt=media&token=5de462e1-7368-49fd-843f-abd4cccb3317',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fkcards%2Fscreenshots%2Fscreenshot-2.png?alt=media&token=30061b0b-5bed-47d5-bf43-16c44cf076e0',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fkcards%2Fscreenshots%2Fscreenshot-3.png?alt=media&token=350180a1-f559-45e7-b887-dafd2cf9eb78',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fkcards%2Fscreenshots%2Fscreenshot-4.png?alt=media&token=574212b2-cf17-4e11-b8c0-a3a81473aeec',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fkcards%2Fscreenshots%2Fscreenshot-5.png?alt=media&token=ecff0737-b3b5-45cc-8d85-97b684f9c4b7',
-      'https://firebasestorage.googleapis.com/v0/b/portfolio-8fa71.appspot.com/o/projects%2Fkcards%2Fscreenshots%2Fscreenshot-6.png?alt=media&token=b49f3f8e-6596-47ab-b3e6-872f5f67d7fe',
-    ],
-    deployment: {
-      web: 'https://kcards-server.herokuapp.com',
-      android: 'https://play.google.com/store/apps/details?id=com.kcards',
-      ios: 'https://itunes.apple.com/us/app/kcards/id1461733524',
-    },
-    website: 'https://kcards-server.herokuapp.com',
+      'I developed a microservices‑based student management system to showcase how to build a scalable, loosely coupled backend for handling student data. I split core functionality into individual Spring Boot services—such as the microservices-student service for CRUD operations—registered them with a Eureka service registry (serviceregistry), and fronted all API calls through a Spring Cloud Gateway (cloudgateway). On top of that, I built an Angular SPA (crud-angular) to provide an interactive UI for creating, updating, and viewing student records. This architecture demonstrates best practices in service discovery, API routing, and separation of concerns, making it easy to extend with new microservices (e.g., course management or authentication) without touching existing components',
+    repository: 'https://github.com/santosh5541/microservice_f1',
+    stack: [Stack.java, Stack.typescript, Stack.sql, Stack.microservices],
+    subProjects: [],
+  },
+  {
+    title: 'Todo Application',
+    slug: 'Todo',
+    banner: '/static/projects/todo/todo.png',
+    description:
+      'I built a single‑page to‑do list application using Angular 16.0.2, scaffolded with the Angular CLI. It demonstrates core Angular concepts—components for rendering task items, services for managing state, two‑way data binding and reactive forms for creating and editing tasks, and routing for navigation—all written in TypeScript and styled with HTML/CSS. The CLI setup also includes a live development server with hot‑reload, unit testing via Karma, and end‑to‑end testing scaffolds via Protractor, making it a full‑featured starter project for task management and modern front‑end workflows',
+    // shortDescription:
+    //   'Ready to deploy, distributed cryptocurrency trading bot.',
+    repository: 'https://github.com/santosh5541/todo',
+    stack: [Stack.typescript, Stack.html, Stack.css],
     subProjects: [],
   },
 ];

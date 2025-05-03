@@ -4,16 +4,34 @@ export const Colors = {
   python: '#4B8BBE',
   typescript: '#234A84',
   javascript: '#F7DF1E',
+  java: '#5382A1',
+  php: '#777BB4',
 
   // Frontend
   web: '#2D2D2D',
   react: '#61DAF6',
   nextjs: '#000000',
+  reactnative: '#2D2D2D',
 
   // Backend
   graphql: '#E535AB',
   node: '#68A063',
   django: '#092E20',
+  flask: '#000000', // ← added
+
+  // Templating
+  jinja2: '#B41736', // ← added
+
+  // Data Processing
+  numpy: '#013243', // ← added
+  pillow: '#CB2027', // ← added
+
+  // Frontend markup
+  html: '#E34F26', // ← added
+  css: '#1572B6', // ← added
+
+  // Notebooks
+  jupyter: '#F37626', // ← added
 
   // Tools, Libs
   webpack: '#8DD6F9',
@@ -21,7 +39,6 @@ export const Colors = {
   redux: '#764ABC',
 
   // Mobile
-  reactnative: '#2D2D2D',
   android: '#56A036',
   ios: '#0C76E2',
 
@@ -30,6 +47,7 @@ export const Colors = {
   postgres: '#336791',
   mongo: '#4DB33D',
   redis: '#D82C20',
+  sql: '#F29111',
 
   // Cloud
   aws: '#FF9900',
@@ -41,6 +59,16 @@ export const Colors = {
   // Messaging
   nats: '#199bfc',
   kafka: '#000000',
+  rabbitmq: '#FF6600',
+
+  // DevOps / CI
+  jenkins: '#D24939',
+
+  // OS
+  linux: '#000000',
+
+  // Machine Learning
+  tensorflow: '#FF6F00',
 
   // Social
   linkedin: '#0077B5',
@@ -64,4 +92,12 @@ export const Colors = {
   resume: '#EEEBFF',
   opensource: '#26BE00',
   tutorial: '#4dd0e1',
+
+  // Data Processing
+  pandas: '#150458',
+  nltk: '#E6D72A',
+  scikit_learn: '#F7931E',
+  streamlit: '#FF4B4B',
+  Restapi: '#007ACC',
+  Microservices: '#150458',
 };

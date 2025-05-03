@@ -1,3 +1,4 @@
+// src/pages/contact.tsx
 import { Header } from '@/components/Form';
 import { PageSEO } from '@/components/SEO';
 import siteMetadata from '@/data/siteMetadata';
@@ -6,21 +7,16 @@ import { contact } from 'config/contact';
 import { openPopupWidget } from 'react-calendly';
 import { RoughNotation } from 'react-rough-notation';
 
-function Contact(): React.ReactElement {
+const Contact = (): JSX.Element => {
   const [randomColor] = useRandomColorPair();
 
-  function onScheduleMeeting(): void {
+  const onScheduleMeeting = (): void => {
     if (!contact.calendly) {
-      console.error('err: calendly link was not provided.');
+      console.error('Calendly link not provided');
       return;
     }
-
-    const config = {
-      url: contact.calendly,
-    };
-
-    openPopupWidget(config);
-  }
+    openPopupWidget({ url: contact.calendly });
+  };
 
   return (
     <>
@@ -28,17 +24,18 @@ function Contact(): React.ReactElement {
         title={`Contact - ${siteMetadata.author}`}
         description={siteMetadata.description}
       />
+
       <div className='fade-in divide-y-2 divide-gray-100 dark:divide-gray-800'>
         <Header title='Contact' />
-        <div className='container py-12'>
+
+        <div className='container space-y-4 py-12'>
           <p>
-            Do you have a project in mind? Want to hire me? or simply wanna
-            chat? Feel free to
+            Got a project, want to collaborate, or just wanna chat? Feel free to{' '}
             <span
-              className='ml-2 cursor-pointer !font-normal !text-black !no-underline dark:!text-white'
-              onClick={onScheduleMeeting}
               role='button'
               tabIndex={0}
+              onClick={onScheduleMeeting}
+              className='ml-2 cursor-pointer !font-normal !text-black no-underline dark:!text-white'
             >
               <RoughNotation
                 show
@@ -52,10 +49,14 @@ function Contact(): React.ReactElement {
               </RoughNotation>
             </span>
           </p>
+
+          <p>
+            Or drop me a message via the chat widget in the bottom‑right corner!
+          </p>
         </div>
       </div>
     </>
   );
-}
+};
 
 export default Contact;
