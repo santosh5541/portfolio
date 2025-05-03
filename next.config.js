@@ -8,7 +8,7 @@ const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
 
-  // your existing ESLint setting
+  // ESLint: ignore errors during build
   eslint: {
     ignoreDuringBuilds: true,
     dirs: ['pages', 'components', 'lib', 'layouts', 'scripts', 'config'],
@@ -18,7 +18,7 @@ const nextConfig = {
     domains: ['firebasestorage.googleapis.com'],
   },
 
-  // Content Security Policy + other security headers
+  // Security headers (including your CSP)
   async headers() {
     const ContentSecurityPolicy = `
       default-src 'self';
@@ -49,32 +49,28 @@ const nextConfig = {
       .replace(/\s{2,}/g, ' ')
       .trim();
 
-    const securityHeaders = [
-      { key: 'Content-Security-Policy', value: ContentSecurityPolicy },
-      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-      { key: 'X-Frame-Options', value: 'DENY' },
-      { key: 'X-Content-Type-Options', value: 'nosniff' },
-      { key: 'X-DNS-Prefetch-Control', value: 'on' },
-      {
-        key: 'Strict-Transport-Security',
-        value: 'max-age=31536000; includeSubDomains',
-      },
-      {
-        key: 'Permissions-Policy',
-        value: 'camera=(), microphone=(), geolocation=()',
-      },
-    ];
-
     return [
       {
-        // apply these headers to all routes
         source: '/(.*)',
-        headers: securityHeaders,
+        headers: [
+          { key: 'Content-Security-Policy', value: ContentSecurityPolicy },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+        ],
       },
     ];
   },
 
-  // customize webpack (file-loader, SVGR, Preact)
   webpack: (config, { dev, isServer }) => {
     // File-loader for images/video
     config.module.rules.push({
@@ -101,8 +97,9 @@ const nextConfig = {
       Object.assign(config.resolve.alias, {
         react: 'preact/compat',
         'react-dom': 'preact/compat',
-        'react/jsx-runtime.js': 'preact/compat/jsx-runtime',
         'react-dom/test-utils': 'preact/test-utils',
+        'react/jsx-runtime': 'preact/jsx-runtime',
+        'react/jsx-dev-runtime': 'preact/jsx-dev-runtime',
       });
     }
 
