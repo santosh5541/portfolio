@@ -8,7 +8,6 @@ const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
 
-  // ESLint: ignore errors during build
   eslint: {
     ignoreDuringBuilds: true,
     dirs: ['pages', 'components', 'lib', 'layouts', 'scripts', 'config'],
@@ -18,7 +17,6 @@ const nextConfig = {
     domains: ['firebasestorage.googleapis.com'],
   },
 
-  // Security headers (including your CSP)
   async headers() {
     const ContentSecurityPolicy = `
       default-src 'self';
@@ -94,13 +92,22 @@ const nextConfig = {
 
     // Swap React → Preact in client production builds
     if (!dev && !isServer) {
-      Object.assign(config.resolve.alias, {
+      config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+
+        // React compatibility
         react: 'preact/compat',
         'react-dom': 'preact/compat',
         'react-dom/test-utils': 'preact/test-utils',
+
+        // Next.js JSX runtimes
         'react/jsx-runtime': 'preact/jsx-runtime',
         'react/jsx-dev-runtime': 'preact/jsx-dev-runtime',
-      });
+
+        // mdx-bundler paths
+        'preact/compat/jsx-runtime.js': 'preact/jsx-runtime',
+        'preact/compat/jsx-dev-runtime.js': 'preact/jsx-dev-runtime',
+      };
     }
 
     return config;
