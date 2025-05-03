@@ -1,4 +1,3 @@
-// src/pages/_document.tsx
 import React from 'react';
 import Document, {
   DocumentContext,
@@ -32,7 +31,7 @@ class MyDocument extends Document {
     return (
       <Html lang='en' className='scroll-smooth'>
         <Head>
-          {/* ───────── Favicons & Metadata ───────────────────────────────────── */}
+          {/* ────── Favicons & Metadata ────── */}
           <link
             rel='apple-touch-icon'
             sizes='76x76'
@@ -54,22 +53,7 @@ class MyDocument extends Document {
           <meta name='msapplication-TileColor' content='#000000' />
           <meta name='theme-color' content='#000000' />
           <link rel='alternate' type='application/rss+xml' href='/feed.xml' />
-          {/* ────────── CRISP CHAT SNIPPET ────────────────────────────────────── */}
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.$crisp = [];
-                window.CRISP_WEBSITE_ID = "bcd14b7b-cde8-4406-b273-1e10b627221d";
-                (function(){
-                  var d = document;
-                  var s = d.createElement("script");
-                  s.src = "https://client.crisp.chat/l.js";
-                  s.async = 1;
-                  d.getElementsByTagName("head")[0].appendChild(s);
-                })();
-              `,
-            }}
-          />
+          {/* — Crisp is initialized in _app.tsx now — */}
         </Head>
         <body className='bg-white text-black antialiased dark:bg-gray-900 dark:text-white'>
           <Main />

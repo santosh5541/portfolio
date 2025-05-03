@@ -1,4 +1,8 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import Script from 'next/script';
+
 import '@/css/global.css';
 import '@/css/prism.css';
 import '@/css/tailwind.css';
@@ -12,21 +16,17 @@ import '@fontsource/open-sans/700.css';
 import '@fontsource/open-sans/800.css';
 
 import { ThemeProvider, useTheme } from 'next-themes';
-import type { AppProps } from 'next/app';
-import Head from 'next/head';
-import Script from 'next/script';
+import { GeistProvider } from '@geist-ui/core';
 
 import Analytics from '@/components/analytics';
 import { ClientReload } from '@/components/ClientReload';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import siteMetadata from '@/data/siteMetadata';
 
-import { GeistProvider } from '@geist-ui/core';
-
 const isDevelopment = process.env.NODE_ENV === 'development';
 const isSocket = process.env.SOCKET;
 
-// 1️⃣ Extend Window so TS knows about Crisp globals
+// 1️⃣ Let TypeScript know about Crisp globals
 declare global {
   interface Window {
     $crisp: any[];
@@ -35,17 +35,27 @@ declare global {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
+  // optional: reload client in dev when using SOCKET=true
+  useEffect(() => {
+    if (isDevelopment && isSocket && (window as any).__NEXT_RELOAD_ENABLED__) {
+      // no-op, ClientReload handles itself
+    }
+  }, []);
+
   return (
     <ThemeProvider attribute='class' defaultTheme={siteMetadata.theme}>
       <Head>
-        <meta content='width=device-width, initial-scale=1' name='viewport' />
+        <meta name='viewport' content='width=device-width, initial-scale=1' />
       </Head>
 
-      {/* 2️⃣ Initialize Crisp before loading the script */}
+      {/* 2️⃣ Initialize Crisp globals */}
       <Script id='crisp-init' strategy='afterInteractive'>
         {`
           window.$crisp = window.$crisp || [];
-          window.CRISP_WEBSITE_ID = "bcd14b7b-cde8-4406-b273-1e10b627221d";
+          window.CRISP_WEBSITE_ID = "${
+            process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID ||
+            'bcd14b7b-cde8-4406-b273-1e10b627221d'
+          }";
         `}
       </Script>
 
@@ -57,6 +67,8 @@ export default function App({ Component, pageProps }: AppProps) {
 
       {isDevelopment && isSocket && <ClientReload />}
       <Analytics />
+
+      {/* Wrap your app in Geist + theme */}
       <GeistProviderWithTheme>
         <LayoutWrapper>
           <Component {...pageProps} />
@@ -66,7 +78,6 @@ export default function App({ Component, pageProps }: AppProps) {
   );
 }
 
-// Explicitly type the props to avoid `any`
 function GeistProviderWithTheme({
   children,
 }: {
