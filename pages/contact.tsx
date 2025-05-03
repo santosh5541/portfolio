@@ -51,7 +51,7 @@ const Contact = (): JSX.Element => {
           </p>
 
           <p>
-            drop me a message via the chat widget in the bottom‑right corner!
+            Or drop me a message via the chat widget in the bottom‑right corner!
           </p>
         </div>
       </div>
