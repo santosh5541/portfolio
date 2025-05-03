@@ -1,0 +1,230 @@
+Thought for a couple of seconds
+
+````markdown
+---
+title: 'Getting Started with Spring Boot: A Practical Guide'
+date: '2025-05-04'
+tags: ['java', 'springboot', 'tutorial', 'microservices', 'rest']
+draft: false
+summary: 'Learn how to quickly bootstrap a production‑ready REST microservice using Spring Boot.'
+images: ['/static/blogs/getting-started-springboot.png']
+authors: ['default']
+---
+
+In this article, we’ll see how Spring Boot lets you go from zero to a running REST microservice in minutes—no XML, no boilerplate, just production‑ready Java code.
+
+## Why Spring Boot?
+
+Traditional Java EE apps often require endless configuration—XML files, servlet descriptors, manual dependency wiring. Spring Boot removes the friction by:
+
+- 🔧 **Auto‑configuration**: Sensible defaults for common setups
+- 📦 **Starter packs**: One dependency pulls in everything you need
+- ⚡ **Embedded server**: Run with `java -jar`—no separate Tomcat install
+- 🔄 **DevTools**: Automatic restart and live reload during development
+
+All that means you can focus on your business logic, not your setup.
+
+## Setup
+
+Generate a new project at [start.spring.io](https://start.spring.io/) with:
+
+- **Project**: Maven
+- **Language**: Java 17+
+- **Spring Boot**: 3.x
+- **Dependencies**: Spring Web, Spring Data JPA, H2 Database, Spring Boot DevTools
+
+Or from the command line:
+
+```bash
+curl https://start.spring.io/starter.tgz \
+  -d dependencies=web,data-jpa,h2,devtools \
+  -d javaVersion=17 \
+  -d name=springboot-demo \
+  -d packageName=com.example.demo \
+  | tar -xzvf -
+```
+````
+
+Open the generated folder in your IDE. Your entry point is `DemoApplication.java`.
+
+## Project Structure
+
+```
+springboot-demo
+├── src
+│   ├── main
+│   │   ├── java/com/example/demo
+│   │   │   ├── DemoApplication.java
+│   │   │   ├── controller
+│   │   │   │   └── BookController.java
+│   │   │   ├── model
+│   │   │   │   └── Book.java
+│   │   │   ├── repository
+│   │   │   │   └── BookRepository.java
+│   │   │   └── service
+│   │   │       └── BookService.java
+│   │   └── resources
+│   │       ├── application.properties
+│   │       └── data.sql
+└── pom.xml
+```
+
+## Define the Entity
+
+```java
+// src/main/java/com/example/demo/model/Book.java
+package com.example.demo.model;
+
+import jakarta.persistence.*;
+
+@Entity
+public class Book {
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    private String title;
+    private String author;
+
+    // getters & setters
+}
+```
+
+## Repository & Service
+
+```java
+// BookRepository.java
+package com.example.demo.repository;
+
+import com.example.demo.model.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookRepository extends JpaRepository<Book, Long> {}
+
+// BookService.java
+package com.example.demo.service;
+
+import com.example.demo.model.Book;
+import com.example.demo.repository.BookRepository;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+public class BookService {
+    private final BookRepository repo;
+    public BookService(BookRepository repo) { this.repo = repo; }
+
+    public List<Book> findAll()       { return repo.findAll(); }
+    public Book findById(Long id)     { return repo.findById(id).orElse(null); }
+    public Book create(Book b)        { return repo.save(b); }
+    public Book update(Long id, Book b) {
+        b.setId(id);
+        return repo.save(b);
+    }
+    public void delete(Long id)       { repo.deleteById(id); }
+}
+```
+
+## REST Controller
+
+```java
+// BookController.java
+package com.example.demo.controller;
+
+import com.example.demo.model.Book;
+import com.example.demo.service.BookService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/books")
+public class BookController {
+    private final BookService service;
+    public BookController(BookService service) { this.service = service; }
+
+    @GetMapping
+    public List<Book> list() {
+        return service.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> get(@PathVariable Long id) {
+        Book b = service.findById(id);
+        return (b != null) ? ResponseEntity.ok(b) : ResponseEntity.notFound().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<Book> create(@RequestBody Book b) {
+        Book saved = service.create(b);
+        return ResponseEntity.created(URI.create("/api/books/" + saved.getId()))
+                             .body(saved);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Book> update(@PathVariable Long id, @RequestBody Book b) {
+        if (service.findById(id) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(service.update(id, b));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}
+```
+
+## Configuration
+
+In `src/main/resources/application.properties`:
+
+```properties
+spring.h2.console.enabled=true
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.jpa.hibernate.ddl-auto=update
+```
+
+And add some seed data in `data.sql`:
+
+```sql
+INSERT INTO BOOK (title, author) VALUES
+  ('Clean Code', 'Robert C. Martin'),
+  ('Spring in Action', 'Craig Walls');
+```
+
+## Run & Test
+
+```bash
+./mvnw spring-boot:run
+```
+
+- H2 console: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+- API endpoints:
+
+  - **GET**  `/api/books`
+  - **POST** `/api/books`
+  - **GET** `/api/books/{id}`
+  - **PUT** `/api/books/{id}`
+  - **DELETE** `/api/books/{id}`
+
+## Benefits of Spring Boot
+
+- 🚀 **Rapid prototyping** – start coding in minutes
+- 🗂️ **Convention over configuration** – fewer XMLs, more annotations
+- 🔌 **Rich ecosystem** – integration with Spring Cloud, Security, Data, Batch
+- 🔄 **DevTools** – live reload, automatic restart
+
+## Next Steps
+
+- 🔒 Secure your APIs with Spring Security + JWT
+- ☁️ Package as a Docker container and deploy to Kubernetes
+- 🔍 Add OpenAPI/Swagger docs with Springdoc
+- 🛠️ Integrate monitoring (Micrometer + Prometheus + Grafana)
+
+Spring Boot empowers you to build robust microservices with minimal fuss. Happy coding!
+
+```
+
+```
