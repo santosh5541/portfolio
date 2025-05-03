@@ -1,0 +1,38 @@
+# .github/workflows/pages-with-crisp.yml
+name: Build & Deploy with Crisp
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install & Export
+        run: |
+          npm ci
+          npm run build
+          npm run export -o docs
+
+      # ─── Inject Crisp snippet into every HTML head ───
+      - name: Inject Crisp Chat
+        run: |
+          CRISP_ID="${{ secrets.NEXT_PUBLIC_CRISP_WEBSITE_ID }}"
+          find docs -name '*.html' -exec sed -i \
+            "/<head>/a <script>window.\$crisp=[];window.CRISP_WEBSITE_ID='${CRISP_ID}';(function(){var d=document,s=d.createElement('script');s.src='https://client.crisp.chat/l.js';s.async=1;d.getElementsByTagName('head')[0].appendChild(s);})();</script>" \
+            {} +
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
