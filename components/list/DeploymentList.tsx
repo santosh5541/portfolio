@@ -1,16 +1,15 @@
 import { Colors } from 'config/colors';
-import { Deployment } from 'config/projects';
 import React from 'react';
 import { AiOutlineLink } from 'react-icons/ai';
 
 interface DeploymentListProps {
-  deployment: Deployment;
+  deployment: Record<string, string>;
 }
 
-function DeploymentList(props: DeploymentListProps): React.ReactElement {
-  const { deployment } = props;
-
-  function renderList(type: string): React.ReactNode {
+function DeploymentList({
+  deployment,
+}: DeploymentListProps): React.ReactElement {
+  const renderList = (type: string): React.ReactNode => {
     const background = Colors[type];
     const link = deployment[type];
 
@@ -26,7 +25,7 @@ function DeploymentList(props: DeploymentListProps): React.ReactElement {
         {type}
       </a>
     );
-  }
+  };
 
   return (
     <div className='flex'>
