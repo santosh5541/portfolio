@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect } from 'react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import Script from 'next/script';
 
 import '@/css/global.css';
 import '@/css/prism.css';
@@ -26,19 +25,11 @@ import siteMetadata from '@/data/siteMetadata';
 const isDevelopment = process.env.NODE_ENV === 'development';
 const isSocket = process.env.SOCKET;
 
-// 1️⃣ Let TypeScript know about Crisp globals
-declare global {
-  interface Window {
-    $crisp: any[];
-    CRISP_WEBSITE_ID: string;
-  }
-}
-
 export default function App({ Component, pageProps }: AppProps) {
-  // optional: reload client in dev when using SOCKET=true
+  // optional: hook for your live‑reload in dev
   useEffect(() => {
     if (isDevelopment && isSocket && (window as any).__NEXT_RELOAD_ENABLED__) {
-      // no-op, ClientReload handles itself
+      // ClientReload handles itself
     }
   }, []);
 
@@ -48,27 +39,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </Head>
 
-      {/* 2️⃣ Initialize Crisp globals */}
-      <Script id='crisp-init' strategy='afterInteractive'>
-        {`
-          window.$crisp = window.$crisp || [];
-          window.CRISP_WEBSITE_ID = "${
-            process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID ||
-            'bcd14b7b-cde8-4406-b273-1e10b627221d'
-          }";
-        `}
-      </Script>
-
-      {/* 3️⃣ Load Crisp client code */}
-      <Script
-        src='https://client.crisp.chat/l.js'
-        strategy='afterInteractive'
-      />
-
       {isDevelopment && isSocket && <ClientReload />}
       <Analytics />
 
-      {/* Wrap your app in Geist + theme */}
       <GeistProviderWithTheme>
         <LayoutWrapper>
           <Component {...pageProps} />
