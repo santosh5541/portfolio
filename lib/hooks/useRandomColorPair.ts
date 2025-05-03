@@ -8,8 +8,6 @@ export function useRandomColorPair(): Tuple<string> {
     ['#F9E5D8', '#EDE9F6'],
     ['#EEEBFF', '#FFFAD4'],
   ];
-
   const random = Math.round(Math.random() * (colors.length - 1));
-
   return useMemo(() => colors[random], []);
 }

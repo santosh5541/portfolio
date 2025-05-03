@@ -10,5 +10,4 @@ const formatDate = (date: string) => {
 
   return now;
 };
-
 export default formatDate;

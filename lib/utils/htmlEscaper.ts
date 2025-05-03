@@ -18,5 +18,6 @@ const pe = (m: keyof typeof esca) => esca[m];
  * @returns {string} the escaped input, and it **throws** an error if
  *  the input type is unexpected, except for boolean and numbers,
  *  converted as string.
+ *
  */
 export const escape = (es: string): string => replace.call(es, ca, pe);
