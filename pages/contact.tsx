@@ -51,12 +51,11 @@ const Contact = (): JSX.Element => {
           </p>
 
           <p>
-            Or drop me a message via the chat widget in the bottom‑right corner!
+            drop me a message via the chat widget in the bottom‑right corner!
           </p>
         </div>
       </div>
     </>
   );
 };
-
 export default Contact;

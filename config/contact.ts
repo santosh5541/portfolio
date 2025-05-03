@@ -16,7 +16,6 @@ export interface Contact {
 }
 
 export const contact: Contact = {
-  // twitter: '@karan_6864',
   site: 'https://luitelsantosh.com.np',
   calendly: 'https://calendly.com/santoshluitel19',
   links: {
