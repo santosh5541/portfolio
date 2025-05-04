@@ -18,6 +18,13 @@ interface Comment {
   replies: Reply[];
 }
 
+const BIN_URL = 'https://api.jsonbin.io/v3/b/6817948f8a456b7966978a10';
+const BIN_HEADERS = {
+  'Content-Type': 'application/json',
+  'X-Master-Key':
+    '$2a$10$1YLJZl9lIrS.PvWSTYnvTudCY2ok.EFzE2T48CqWhS2ytBIamI56q',
+};
+
 export default function Giscus() {
   const [email, setEmail] = useState('');
   const [hasSavedEmail, setHasSavedEmail] = useState(false);
@@ -27,74 +34,58 @@ export default function Giscus() {
   const [activeReply, setActiveReply] = useState<string | null>(null);
   const [likers, setLikers] = useState<string[]>([]);
 
-  const EMAIL_KEY = 'giscus_email';
-  const path = typeof window !== 'undefined' ? window.location.pathname : '';
-  const COMMENTS_KEY = `comments_${path}`;
-  const LIKERS_KEY = `likers_${path}`;
-
-  // Email validation and name derivation
+  // Validation & name helper
   const validateEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
   const nameFromEmail = (e: string) =>
     e
       .split('@')[0]
       .split(/[._-]/)
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .map(w => w[0].toUpperCase() + w.slice(1))
       .join(' ');
 
-  // Load from localStorage
+  // Fetch the shared store
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const storedEmail = localStorage.getItem(EMAIL_KEY);
-    if (storedEmail) {
-      setEmail(storedEmail);
+    fetch(BIN_URL, { headers: BIN_HEADERS })
+      .then(r => r.json())
+      .then(({ record }) => {
+        setComments(record.comments || []);
+        setLikers(record.likers || []);
+      });
+    // load email from localStorage
+    const stored = localStorage.getItem('giscus_email');
+    if (stored) {
+      setEmail(stored);
       setHasSavedEmail(true);
     }
-    const rawC = localStorage.getItem(COMMENTS_KEY);
-    if (rawC) setComments(JSON.parse(rawC));
-    const rawL = localStorage.getItem(LIKERS_KEY);
-    if (rawL) setLikers(JSON.parse(rawL));
   }, []);
 
-  // Persist via localStorage
-  const persistEmail = (e: string) => {
-    localStorage.setItem(EMAIL_KEY, e);
-    setHasSavedEmail(true);
-  };
-  const persistComments = (list: Comment[]) => {
-    localStorage.setItem(COMMENTS_KEY, JSON.stringify(list));
-    setComments(list);
-  };
-  const persistLikers = (list: string[]) => {
-    localStorage.setItem(LIKERS_KEY, JSON.stringify(list));
-    setLikers(list);
+  // Write back utility
+  const writeBack = async (newComments: Comment[], newLikers: string[]) => {
+    await fetch(BIN_URL, {
+      method: 'PUT',
+      headers: BIN_HEADERS,
+      body: JSON.stringify({ comments: newComments, likers: newLikers }),
+    });
   };
 
   // Handlers
-  const onEmailSubmit = (evt: FormEvent) => {
-    evt.preventDefault();
-    const trimmed = email.trim();
-    if (!validateEmail(trimmed)) {
-      alert('Please enter a valid email.');
-      return;
-    }
-    persistEmail(trimmed);
+  const onEmailSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const t = email.trim();
+    if (!validateEmail(t)) return alert('Enter a valid email');
+    localStorage.setItem('giscus_email', t);
+    setHasSavedEmail(true);
   };
 
   const hasCommented = comments.some(c => c.authorEmail === email);
   const hasLiked = likers.includes(email);
 
-  const onCommentSubmit = (evt: FormEvent) => {
-    evt.preventDefault();
-    if (!hasSavedEmail) {
-      alert('Please save your email first.');
-      return;
-    }
+  const onCommentSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!hasSavedEmail) return alert('Save your email first');
     const text = draft.trim();
     if (!text) return;
-    if (hasCommented) {
-      alert('You’ve already commented.');
-      return;
-    }
+    if (hasCommented) return alert('You’ve already commented');
     const c: Comment = {
       id: `${Date.now()}-${Math.random()}`,
       authorEmail: email,
@@ -103,49 +94,46 @@ export default function Giscus() {
       createdAt: new Date().toISOString(),
       replies: [],
     };
-    persistComments([c, ...comments]);
+    const updatedComments = [c, ...comments];
+    setComments(updatedComments);
     setDraft('');
+    await writeBack(updatedComments, likers);
   };
 
-  const onLike = () => {
-    if (!hasSavedEmail) {
-      alert('Please save your email first.');
-      return;
-    }
-    if (hasLiked) return;
-    persistLikers([email, ...likers]);
-  };
-
-  const openReplyBox = (cid: string) => setActiveReply(cid);
-  const onReplyChange = (cid: string, val: string) =>
-    setReplyDrafts(prev => ({ ...prev, [cid]: val }));
-  const onReplySubmit = (evt: FormEvent, cid: string) => {
-    evt.preventDefault();
-    if (!hasSavedEmail) {
-      alert('Please save your email first.');
-      return;
-    }
-    const text = (replyDrafts[cid] || '').trim();
-    if (!text) return;
+  const onReplySubmit = async (e: FormEvent, cid: string) => {
+    e.preventDefault();
+    if (!hasSavedEmail) return alert('Save your email first');
+    const txt = (replyDrafts[cid] || '').trim();
+    if (!txt) return;
     const r: Reply = {
       id: `${Date.now()}-${Math.random()}`,
       authorEmail: email,
       authorName: nameFromEmail(email),
-      text,
+      text: txt,
       createdAt: new Date().toISOString(),
     };
-    const updated = comments.map(c =>
+    const updatedComments = comments.map(c =>
       c.id === cid ? { ...c, replies: [r, ...c.replies] } : c,
     );
-    persistComments(updated);
+    setComments(updatedComments);
     setReplyDrafts(prev => ({ ...prev, [cid]: '' }));
     setActiveReply(null);
+    await writeBack(updatedComments, likers);
   };
 
-  const onDeleteComment = (cid: string) => {
-    if (!confirm('Delete your comment permanently?')) return;
-    const updated = comments.filter(c => c.id !== cid);
-    persistComments(updated);
+  const onDeleteComment = async (cid: string) => {
+    if (!confirm('Delete your comment?')) return;
+    const updatedComments = comments.filter(c => c.id !== cid);
+    setComments(updatedComments);
+    await writeBack(updatedComments, likers);
+  };
+
+  const onLike = async () => {
+    if (!hasSavedEmail) return alert('Save your email first');
+    if (hasLiked) return;
+    const updatedLikers = [email, ...likers];
+    setLikers(updatedLikers);
+    await writeBack(comments, updatedLikers);
   };
 
   return (
@@ -172,7 +160,7 @@ export default function Giscus() {
             type='text'
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className='w-full rounded border bg-gray-50 p-2 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
+            className='w-full rounded border bg-gray-50 p-2 dark:bg-gray-700 dark:text-gray-100'
             placeholder='Your email'
           />
           <button
@@ -188,80 +176,86 @@ export default function Giscus() {
         </p>
       )}
 
-      {/* Comments List */}
+      {/* Comments & Replies */}
       <ul className='mb-6 space-y-6'>
-        {comments.length === 0 ? (
+        {comments.length === 0 && (
           <li className='text-gray-600 dark:text-gray-400'>No comments yet.</li>
-        ) : (
-          comments.map(c => (
-            <li key={c.id} className='border-b pb-4'>
-              <div className='flex items-start justify-between'>
-                <div>
-                  <p className='text-gray-900 dark:text-gray-100'>
-                    <strong>{c.authorName}</strong>{' '}
-                    <span className='text-sm text-gray-500 dark:text-gray-400'>
-                      {new Date(c.createdAt).toLocaleString()}
-                    </span>
-                  </p>
-                  <p className='mt-1 text-gray-800 dark:text-gray-200'>
-                    {c.text}
-                  </p>
-                </div>
-                {hasSavedEmail && c.authorEmail === email && (
-                  <button
-                    onClick={() => onDeleteComment(c.id)}
-                    className='text-sm text-red-600 hover:underline'
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
-              <button
-                onClick={() => openReplyBox(c.id)}
-                className='mt-2 text-sm text-blue-600 dark:text-blue-400'
-              >
-                Reply
-              </button>
-              {activeReply === c.id && (
-                <form
-                  onSubmit={e => onReplySubmit(e, c.id)}
-                  className='mt-2 border-l border-gray-200 pl-4 dark:border-gray-700'
-                >
-                  <textarea
-                    rows={2}
-                    value={replyDrafts[c.id] || ''}
-                    onChange={e => onReplyChange(c.id, e.target.value)}
-                    className='w-full rounded border bg-gray-50 p-2 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
-                    placeholder='Write a reply…'
-                  />
-                  <button
-                    type='submit'
-                    className='mt-1 rounded bg-indigo-600 px-3 py-1 text-white hover:bg-indigo-700'
-                  >
-                    Post Reply
-                  </button>
-                </form>
-              )}
-              {c.replies.length > 0 && (
-                <ul className='mt-4 space-y-4 border-l border-gray-200 pl-4 dark:border-gray-700'>
-                  {c.replies.map(r => (
-                    <li key={r.id}>
-                      <p className='text-gray-900 dark:text-gray-100'>
-                        <strong>{r.authorName}</strong>{' '}
-                        <span className='text-sm text-gray-500 dark:text-gray-400'>
-                          {new Date(r.createdAt).toLocaleString()}
-                        </span>
-                      </p>
-                      <p className='mt-1 text-gray-800 dark:text-gray-200'>
-                        {r.text}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))
         )}
+        {comments.map(c => (
+          <li key={c.id} className='border-b pb-4'>
+            <div className='flex items-start justify-between'>
+              <div>
+                <p className='text-gray-900 dark:text-gray-100'>
+                  <strong>{c.authorName}</strong>{' '}
+                  <span className='text-sm text-gray-500 dark:text-gray-400'>
+                    {new Date(c.createdAt).toLocaleString()}
+                  </span>
+                </p>
+                <p className='mt-1 text-gray-800 dark:text-gray-200'>
+                  {c.text}
+                </p>
+              </div>
+              {hasSavedEmail && c.authorEmail === email && (
+                <button
+                  onClick={() => onDeleteComment(c.id)}
+                  className='text-sm text-red-600 hover:underline'
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+            <button
+              onClick={() => setActiveReply(c.id)}
+              className='mt-2 text-sm text-blue-600 dark:text-blue-400'
+            >
+              Reply
+            </button>
+
+            {activeReply === c.id && (
+              <form
+                onSubmit={e => onReplySubmit(e, c.id)}
+                className='mt-2 border-l border-gray-200 pl-4 dark:border-gray-700'
+              >
+                <textarea
+                  rows={2}
+                  value={replyDrafts[c.id] || ''}
+                  onChange={e =>
+                    setReplyDrafts(prev => ({
+                      ...prev,
+                      [c.id]: e.target.value,
+                    }))
+                  }
+                  className='w-full rounded border bg-gray-50 p-2 dark:bg-gray-700 dark:text-gray-100'
+                  placeholder='Write a reply…'
+                />
+                <button
+                  type='submit'
+                  className='mt-1 rounded bg-indigo-600 px-3 py-1 text-white hover:bg-indigo-700'
+                >
+                  Post Reply
+                </button>
+              </form>
+            )}
+
+            {c.replies.length > 0 && (
+              <ul className='mt-4 space-y-4 border-l border-gray-200 pl-4 dark:border-gray-700'>
+                {c.replies.map(r => (
+                  <li key={r.id}>
+                    <p className='text-gray-900 dark:text-gray-100'>
+                      <strong>{r.authorName}</strong>{' '}
+                      <span className='text-sm text-gray-500 dark:text-gray-400'>
+                        {new Date(r.createdAt).toLocaleString()}
+                      </span>
+                    </p>
+                    <p className='mt-1 text-gray-800 dark:text-gray-200'>
+                      {r.text}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
       </ul>
 
       {/* New Comment Form */}
@@ -274,7 +268,7 @@ export default function Giscus() {
             rows={3}
             value={draft}
             onChange={e => setDraft(e.target.value)}
-            className='mb-2 w-full rounded border bg-gray-50 p-2 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
+            className='mb-2 w-full rounded border bg-gray-50 p-2 dark:bg-gray-700 dark:text-gray-100'
             placeholder={
               hasCommented ? 'You’ve already commented.' : 'Write your comment…'
             }
