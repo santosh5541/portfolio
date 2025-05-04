@@ -1,5 +1,8 @@
-import siteMetadata from '@/data/siteMetadata';
+// components/comments/index.tsx
+
+import React from 'react';
 import dynamic from 'next/dynamic';
+import siteMetadata from '@/data/siteMetadata';
 import { PostFrontMatter } from 'types/PostFrontMatter';
 
 interface Props {
@@ -7,50 +10,40 @@ interface Props {
 }
 
 const UtterancesComponent = dynamic(
-  () => {
-    return import('@/components/comments/Utterances');
-  },
+  () => import('@/components/comments/Utterances'),
   { ssr: false },
 );
-const GiscusComponent = dynamic(
-  () => {
-    return import('@/components/comments/Giscus');
-  },
-  { ssr: false },
-);
-const DisqusComponent = dynamic(
-  () => {
-    return import('@/components/comments/Disqus');
-  },
-  { ssr: false },
-);
+const GiscusComponent = dynamic(() => import('@/components/comments/Giscus'), {
+  ssr: false,
+});
+const DisqusComponent = dynamic(() => import('@/components/comments/Disqus'), {
+  ssr: false,
+});
 
 const Comments = ({ frontMatter }: Props) => {
-  let term;
-  switch (
-    siteMetadata.comment.giscusConfig.mapping ||
-    siteMetadata.comment.utterancesConfig.issueTerm
-  ) {
-    case 'pathname':
-      term = frontMatter.slug;
-      break;
-    case 'url':
-      term = window.location.href;
-      break;
-    case 'title':
-      term = frontMatter.title;
-      break;
+  // compute term only for those providers that need it
+  let issueTerm: string | undefined;
+  if (siteMetadata.comment.provider === 'utterances') {
+    switch (siteMetadata.comment.utterancesConfig.issueTerm) {
+      case 'pathname':
+        issueTerm = frontMatter.slug;
+        break;
+      case 'url':
+        issueTerm = typeof window !== 'undefined' ? window.location.href : '';
+        break;
+      case 'title':
+        issueTerm = frontMatter.title;
+        break;
+    }
   }
+
   return (
     <div id='comment'>
-      {siteMetadata.comment && siteMetadata.comment.provider === 'giscus' && (
-        <GiscusComponent mapping={term} />
+      {siteMetadata.comment.provider === 'giscus' && <GiscusComponent />}
+      {siteMetadata.comment.provider === 'utterances' && issueTerm && (
+        <UtterancesComponent issueTerm={issueTerm} />
       )}
-      {siteMetadata.comment &&
-        siteMetadata.comment.provider === 'utterances' && (
-          <UtterancesComponent issueTerm={term} />
-        )}
-      {siteMetadata.comment && siteMetadata.comment.provider === 'disqus' && (
+      {siteMetadata.comment.provider === 'disqus' && (
         <DisqusComponent frontMatter={frontMatter} />
       )}
     </div>
