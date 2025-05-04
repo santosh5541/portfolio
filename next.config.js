@@ -21,28 +21,30 @@ const nextConfig = {
     const ContentSecurityPolicy = `
       default-src 'self';
       script-src 'self' 'unsafe-inline' 'unsafe-eval'
-        giscus.app
+        https://giscus.app
         www.googletagmanager.com
         www.google-analytics.com
         https://client.crisp.chat;
       script-src-elem 'self' 'unsafe-inline'
-        giscus.app
+        https://giscus.app
         www.googletagmanager.com
         www.google-analytics.com
         https://client.crisp.chat;
       style-src 'self' 'unsafe-inline'
-        https://client.crisp.chat;
+        https://client.crisp.chat
+        https://giscus.app;
       style-src-elem 'self' 'unsafe-inline'
-        https://client.crisp.chat;
+        https://client.crisp.chat
+        https://giscus.app;
       img-src * blob: data:;
       media-src 'none';
       connect-src *;
       font-src 'self';
       frame-src
-        giscus.app
-        www.youtube.com
-        calendly.com
-        drawsql.app;
+        https://giscus.app
+        https://www.youtube.com
+        https://calendly.com
+        https://drawsql.app;
     `
       .replace(/\s{2,}/g, ' ')
       .trim();
@@ -94,17 +96,11 @@ const nextConfig = {
     if (!dev && !isServer) {
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
-
-        // React compatibility
         react: 'preact/compat',
         'react-dom': 'preact/compat',
         'react-dom/test-utils': 'preact/test-utils',
-
-        // Next.js JSX runtimes
         'react/jsx-runtime': 'preact/jsx-runtime',
         'react/jsx-dev-runtime': 'preact/jsx-dev-runtime',
-
-        // mdx-bundler paths
         'preact/compat/jsx-runtime.js': 'preact/jsx-runtime',
         'preact/compat/jsx-dev-runtime.js': 'preact/jsx-dev-runtime',
       };
