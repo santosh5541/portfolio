@@ -1,4 +1,5 @@
 // next.config.js
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -18,17 +19,17 @@ const nextConfig = {
   },
 
   async headers() {
-    const ContentSecurityPolicy = `
+    const csp = `
       default-src 'self';
       script-src 'self' 'unsafe-inline' 'unsafe-eval'
         https://giscus.app
-        www.googletagmanager.com
-        www.google-analytics.com
+        https://www.googletagmanager.com
+        https://www.google-analytics.com
         https://client.crisp.chat;
       script-src-elem 'self' 'unsafe-inline'
         https://giscus.app
-        www.googletagmanager.com
-        www.google-analytics.com
+        https://www.googletagmanager.com
+        https://www.google-analytics.com
         https://client.crisp.chat;
       style-src 'self' 'unsafe-inline'
         https://client.crisp.chat
@@ -53,7 +54,7 @@ const nextConfig = {
       {
         source: '/(.*)',
         headers: [
-          { key: 'Content-Security-Policy', value: ContentSecurityPolicy },
+          { key: 'Content-Security-Policy', value: csp },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
