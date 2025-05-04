@@ -1,81 +1,62 @@
+// components/Giscus.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
-
 import siteMetadata from '@/data/siteMetadata';
 
-interface Props {
-  mapping: string;
-}
-
-const Giscus = ({ mapping }: Props) => {
-  const [enableLoadComments, setEnabledLoadComments] = useState(true);
+export default function Giscus() {
+  const [loaded, setLoaded] = useState(false);
   const { theme, resolvedTheme } = useTheme();
+  const config = siteMetadata.comment.giscusConfig;
   const commentsTheme =
-    siteMetadata.comment.giscusConfig.themeURL === ''
-      ? theme === 'dark' || resolvedTheme === 'dark'
-        ? siteMetadata.comment.giscusConfig.darkTheme
-        : siteMetadata.comment.giscusConfig.theme
-      : siteMetadata.comment.giscusConfig.themeURL;
+    config.themeURL ||
+    (theme === 'dark' || resolvedTheme === 'dark'
+      ? config.darkTheme
+      : config.theme);
 
-  const COMMENTS_ID = 'comments-container';
-
-  const LoadComments = useCallback(() => {
-    setEnabledLoadComments(false);
+  const loadComments = useCallback(() => {
+    setLoaded(true);
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
-    script.setAttribute('data-repo', siteMetadata.comment.giscusConfig.repo);
-    script.setAttribute(
-      'data-repo-id',
-      siteMetadata.comment.giscusConfig.repositoryId,
-    );
-    script.setAttribute(
-      'data-category',
-      siteMetadata.comment.giscusConfig.category,
-    );
-    script.setAttribute(
-      'data-category-id',
-      siteMetadata.comment.giscusConfig.categoryId,
-    );
-    script.setAttribute(
-      'data-mapping',
-      siteMetadata.comment.giscusConfig.mapping,
-    );
-    script.setAttribute(
-      'data-reactions-enabled',
-      siteMetadata.comment.giscusConfig.reactions,
-    );
-    script.setAttribute(
-      'data-emit-metadata',
-      siteMetadata.comment.giscusConfig.metadata,
-    );
-    script.setAttribute('data-theme', commentsTheme);
-    script.setAttribute('crossorigin', 'anonymous');
     script.async = true;
+    script.crossOrigin = 'anonymous';
 
-    const comments = document.getElementById(COMMENTS_ID);
-    if (comments) comments.appendChild(script);
+    // Core attrs
+    script.setAttribute('data-repo', config.repo!);
+    script.setAttribute('data-repo-id', config.repositoryId!);
+    script.setAttribute('data-category', config.category!);
+    script.setAttribute('data-category-id', config.categoryId!);
+
+    // Use pathname mapping to avoid title issues
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '0');
+    script.setAttribute('data-input-position', 'bottom');
+
+    // Extras
+    script.setAttribute('data-reactions-enabled', config.reactions!);
+    script.setAttribute('data-emit-metadata', config.metadata!);
+    script.setAttribute('data-theme', commentsTheme);
+
+    const container = document.getElementById('comments-container');
+    container?.appendChild(script);
 
     return () => {
-      const comments = document.getElementById(COMMENTS_ID);
-      if (comments) comments.innerHTML = '';
+      if (container) container.innerHTML = '';
     };
-  }, [commentsTheme, mapping]);
+  }, [commentsTheme]);
 
-  // Reload on theme change
+  // Reload on theme switch
   useEffect(() => {
-    const iframe = document.querySelector('iframe.giscus-frame');
-    if (!iframe) return;
-    LoadComments();
-  }, [LoadComments]);
+    if (loaded) loadComments();
+  }, [loadComments, loaded]);
 
   return (
     <div className='pt-6 pb-6 text-center text-gray-700 dark:text-gray-300'>
-      {enableLoadComments && (
-        <button onClick={LoadComments}>Load Comments</button>
+      {!loaded && (
+        <button onClick={loadComments} className='underline'>
+          Load Comments
+        </button>
       )}
-      <div className='giscus' id={COMMENTS_ID} />
+      <div id='comments-container' className='giscus' />
     </div>
   );
-};
-
-export default Giscus;
+}
