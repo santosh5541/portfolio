@@ -1,28 +1,12 @@
 ---
 title: 'Dockerize your Node app'
-date: '2021-07-13'
+date: '2025-05-04'
 tags: ['node', 'docker', 'devops', 'javascript']
 draft: false
 summary: 'Learn how to dockerize your Node application for development and production'
 images: ['/static/blogs/dockerize-node.png']
 authors: ['default']
 ---
-
-Hey, welcome back. This article is part of the Dockerize series, make sure to checkout the [Introduction](https://karanpratapsingh.com/blog/introduction-dockerize-series) where I go over some concepts we are going to use.
-
-Today we'll dockerize our Node application, very similar to how we dockerized our React app in the last part by taking advantage of builder pattern with multi stage builds!
-
-<iframe
-  className='sm:h-96'
-  height='100%'
-  width='100%'
-  src='https://www.youtube.com/embed/Lfog4RK4S_I'
-  allowFullScreen
-  frameborder='0'
-  allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
-></iframe>
-
-_I've also made a video, if you'd like to follow along_
 
 ### Project setup
 
@@ -176,5 +160,3 @@ docker run -p 80:4000 --name node-app app-prod
 ## Next steps
 
 With that, we should be able to take advantage of docker in our workflow and deploy our production images faster to any platform of our choice.
-
-Feel free to reach out to me on [Twitter](https://twitter.com/karan_6864) if you face any issues.

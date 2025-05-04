@@ -1,6 +1,6 @@
 ---
 title: 'Optimize Node.js performance with clustering'
-date: '2021-10-01'
+date: '2025-05-03'
 tags: ['node', 'typescript', 'javascript']
 draft: false
 summary: 'Optimize your Node.js application performance with clustering'
@@ -15,8 +15,6 @@ In this article, We will see how we can optimize our Node.js applications with c
 Node.js is single threaded by default and hence only utilizes one cpu core for that thread. So, to take advantage of all the cores available we need to launch a cluster of Node.js processes.
 
 For this we can use the native [cluster](https://nodejs.org/api/cluster.html) module which creates several child processes (workers) that operate parallelly. Each generated process has it's own event loop, V8 instance and memory. The primary process and worker process communicate with each other via IPC (Inter-Process Communication).
-
-_Note: Code from this tutorial will be available in this [repository](https://github.com/karanpratapsingh/tutorials/tree/master/node/cluster)_
 
 ### Project Setup
 

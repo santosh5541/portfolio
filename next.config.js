@@ -15,7 +15,13 @@ const nextConfig = {
   },
 
   images: {
-    domains: ['firebasestorage.googleapis.com'],
+    domains: [
+      'firebasestorage.googleapis.com',
+      'images.unsplash.com',
+      'miro.medium.com',
+      'jalammar.github.io',
+      'raw.githubusercontent.com',
+    ],
   },
 
   async headers() {

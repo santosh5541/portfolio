@@ -1,6 +1,6 @@
 ---
 title: 'Dockerize your React app'
-date: '2021-07-08'
+date: '2025-05-03'
 tags: ['react', 'docker', 'javascript', 'devops']
 draft: false
 summary: 'Learn how to dockerize your React application for development and production'
@@ -8,27 +8,9 @@ images: ['/static/blogs/dockerize-react.png']
 authors: ['default']
 ---
 
-Hey, welcome back. This article is part of the Dockerize series, make sure to checkout the [Introduction](https://karanpratapsingh.com/blog/introduction-dockerize-series) where I go over some concepts we are going to use.
-
-Today we'll dockerize our React application by taking advantage of builder pattern with multi stage builds for optimization!
-
-<iframe
-  className='sm:h-96'
-  height='100%'
-  width='100%'
-  src='https://www.youtube.com/embed/1QK27MUr2Dk'
-  allowFullScreen
-  frameborder='0'
-  allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
-></iframe>
-
-_I've also made a video, if you'd like to follow along_
-
-### Project setup
+Hey, welcome back. This article is part of the Dockerize series.
 
 I've initialized a pretty standard react project using the default [create react app](https://github.com/facebook/create-react-app) (CRA) template.
-
-All the code from this article will be available in [this repo](https://github.com/karanpratapsingh/tutorials)
 
 ```
 ├── node_modules
@@ -231,5 +213,3 @@ location ~* \.(?:css|js)$ {
 ## Next steps
 
 With that, we should be able to take advantage of docker in our workflow and deploy our production images faster to any platform of our choice.
-
-Feel free to reach out to me on [Twitter](https://twitter.com/karan_6864) if you face any issues.
