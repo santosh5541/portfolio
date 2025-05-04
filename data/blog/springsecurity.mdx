@@ -1,0 +1,240 @@
+---
+title: 'Securing Spring Boot Applications with OAuth2 and JWT'
+date: '2025-05-05'
+tags: ['java', 'springboot', 'security', 'oauth2', 'jwt', 'tutorial']
+draft: false
+summary: 'Learn how to protect your Spring Boot microservices using OAuth2 flows and stateless JWT tokens.'
+images: ['/static/blogs/springboot-oauth2-jwt/security.png']
+authors: ['default']
+---
+
+import Image from 'next/image';
+
+In this tutorial, we’ll lock down a Spring Boot application using OAuth2 as our Authorization Server and JWTs for stateless authentication. You’ll configure an auth server, a resource server, and a web client that executes the Authorization Code flow—with no XML, just Java and YAML.
+
+<Image
+  src='/static/blogs/springboot-oauth2-jwt/flow.png'
+  alt='OAuth2 & JWT Flow'
+  width={800}
+  height={400}
+/>
+
+## Why OAuth2 + JWT?
+
+- 🔒 **Standardized flows** (authorization code, client credentials)
+- 🆓 **Stateless tokens** that carry user claims and can be verified without a central session store
+- ⚖️ **Scalability**—each service validates tokens locally
+
+---
+
+## Prerequisites
+
+- Java 17+
+- Maven or Gradle
+- Basic Spring Boot familiarity
+- cURL or Postman for testing
+
+---
+
+## 1. Add Dependencies
+
+```xml
+<!-- pom.xml -->
+<dependencies>
+  <!-- Spring Web -->
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+  </dependency>
+
+  <!-- OAuth2 Resource Server -->
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+  </dependency>
+
+  <!-- Spring Authorization Server -->
+  <dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-oauth2-authorization-server</artifactId>
+    <version>0.4.0</version>
+  </dependency>
+
+  <!-- JWT support -->
+  <dependency>
+    <groupId>com.nimbusds</groupId>
+    <artifactId>nimbus-jose-jwt</artifactId>
+  </dependency>
+</dependencies>
+```
+
+---
+
+## 2. Set Up the Authorization Server
+
+Create `AuthServerConfig.java` under your auth-server module:
+
+```java
+@Configuration(proxyBeanMethods = false)
+public class AuthServerConfig {
+
+    @Bean
+    public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) throws Exception {
+        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+        return http
+          .formLogin(Customizer.withDefaults())
+          .build();
+    }
+
+    @Bean
+    public RegisteredClientRepository registeredClientRepository() {
+        RegisteredClient client = RegisteredClient.withId(UUID.randomUUID().toString())
+            .clientId("my-client")
+            .clientSecret("{noop}secret")
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .redirectUri("http://localhost:8081/login/oauth2/code/my-client")
+            .scope(OidcScopes.OPENID)
+            .build();
+
+        return new InMemoryRegisteredClientRepository(client);
+    }
+
+    @Bean
+    public JWKSource<SecurityContext> jwkSource() {
+        RSAKey rsa = KeyGeneratorUtils.generateRsa();
+        JWKSet set = new JWKSet(rsa);
+        return (selector, context) -> selector.select(set);
+    }
+
+    @Bean
+    public AuthorizationServerSettings providerSettings() {
+        return AuthorizationServerSettings.builder()
+            .issuer("http://localhost:9000")
+            .build();
+    }
+}
+```
+
+> **Note:**
+>
+> - `RegisteredClient` holds client credentials and grant settings.
+> - JWKSource generates an RSA key pair for signing JWTs.
+> - The `issuer` URL must match what your resource server expects.
+
+---
+
+## 3. Configure the Resource Server
+
+In your API service, add `ResourceServerConfig.java`:
+
+```java
+@Configuration(proxyBeanMethods = false)
+public class ResourceServerConfig {
+
+    @Bean
+    public SecurityFilterChain resourceSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+          .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/public/**").permitAll()
+            .anyRequest().authenticated()
+          )
+          .oauth2ResourceServer(oauth2 -> oauth2
+            .jwt(jwt -> jwt
+              .jwkSetUri("http://localhost:9000/.well-known/jwks.json")
+            )
+          );
+        return http.build();
+    }
+}
+```
+
+And in `application.yml`:
+
+```yaml
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9000/.well-known/jwks.json
+```
+
+---
+
+## 4. Add an OAuth2 Client for Web Login
+
+To enable browser-based login (Authorization Code flow) in a UI module:
+
+```yaml
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          my-client:
+            client-id: my-client
+            client-secret: secret
+            scope: openid
+            authorization-grant-type: authorization_code
+            redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+        provider:
+          my-client:
+            issuer-uri: http://localhost:9000
+```
+
+Visiting a protected endpoint will now redirect users to your auth server’s login page.
+
+---
+
+## 5. Testing the Flow
+
+1. **Get Authorization Code**
+
+   ```
+   http://localhost:9000/oauth2/authorize?
+     response_type=code&
+     client_id=my-client&
+     scope=openid&
+     redirect_uri=http://localhost:8081/login/oauth2/code/my-client
+   ```
+
+2. **Exchange Code for JWT**
+
+   ```bash
+   curl -X POST http://localhost:9000/oauth2/token \
+     -u my-client:secret \
+     -d grant_type=authorization_code \
+     -d code=<AUTH_CODE> \
+     -d redirect_uri=http://localhost:8081/login/oauth2/code/my-client
+   ```
+
+3. **Call Secure API**
+
+   ```bash
+   curl -H "Authorization: Bearer <ACCESS_TOKEN>" \
+     http://localhost:8082/api/secure
+   ```
+
+---
+
+## 6. Best Practices
+
+- ⏱ **Short token lifespans** (e.g., 15 min) with refresh tokens
+- 🔑 **Rotate JWKs** regularly
+- 🔐 **Always use HTTPS** in production
+- ⚙️ **Define scopes & claims** for fine‑grained access
+- 📊 **Monitor** token issuance and validation failures
+
+---
+
+## Conclusion
+
+With minimal configuration, you’ve set up a standards‑based, stateless authentication system in Spring Boot. The Authorization Server issues signed JWTs that any Resource Server can validate locally—no session store required. Next steps: add refresh‑token rotation, embed custom claims, or integrate with an identity provider!
+
+---
+
+[← Back to blog index](/blog)
+
+```
+
+```
