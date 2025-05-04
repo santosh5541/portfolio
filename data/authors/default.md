@@ -2,7 +2,7 @@
 name: Santosh Luitel
 shortname: Santosh Luitel
 avatar: /static/profile.jpg
-occupation: Software Engineer | AI Enthusiast
+occupation: Software Engineer | AI Enthusiast | Student
 resume: /static/Resume.pdf
 email: santoshluitel19@outlook.com
 website: https://luitelsantosh.com.np
