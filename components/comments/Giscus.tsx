@@ -1,3 +1,4 @@
+// components/Giscus.tsx
 import React, { useState, useEffect, FormEvent } from 'react';
 
 interface Reply {
@@ -152,7 +153,7 @@ export default function Giscus() {
       {/* Header */}
       <div className='mb-4 flex items-center justify-between'>
         <h3 className='text-xl'>
-          Comments: <strong>{comments.length}</strong> | Blog Likes:{' '}
+          Comments: <strong>{comments.length}</strong> | Likes:{' '}
           <strong>{likers.length}</strong>
         </h3>
         <button
@@ -171,7 +172,7 @@ export default function Giscus() {
             type='text'
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className='w-full rounded border p-2'
+            className='w-full rounded border bg-gray-50 p-2 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
             placeholder='Your email'
           />
           <button
@@ -182,7 +183,7 @@ export default function Giscus() {
           </button>
         </form>
       ) : (
-        <p className='mb-4'>
+        <p className='mb-4 text-gray-900 dark:text-gray-100'>
           You are <strong>{nameFromEmail(email)}</strong> ({email})
         </p>
       )}
@@ -190,19 +191,21 @@ export default function Giscus() {
       {/* Comments List */}
       <ul className='mb-6 space-y-6'>
         {comments.length === 0 ? (
-          <li>No comments yet.</li>
+          <li className='text-gray-600 dark:text-gray-400'>No comments yet.</li>
         ) : (
           comments.map(c => (
             <li key={c.id} className='border-b pb-4'>
               <div className='flex items-start justify-between'>
                 <div>
-                  <p>
+                  <p className='text-gray-900 dark:text-gray-100'>
                     <strong>{c.authorName}</strong>{' '}
-                    <span className='text-sm text-gray-500'>
+                    <span className='text-sm text-gray-500 dark:text-gray-400'>
                       {new Date(c.createdAt).toLocaleString()}
                     </span>
                   </p>
-                  <p className='mt-1'>{c.text}</p>
+                  <p className='mt-1 text-gray-800 dark:text-gray-200'>
+                    {c.text}
+                  </p>
                 </div>
                 {hasSavedEmail && c.authorEmail === email && (
                   <button
@@ -215,41 +218,43 @@ export default function Giscus() {
               </div>
               <button
                 onClick={() => openReplyBox(c.id)}
-                className='mt-2 text-sm text-blue-600'
+                className='mt-2 text-sm text-blue-600 dark:text-blue-400'
               >
                 Reply
               </button>
               {activeReply === c.id && (
                 <form
                   onSubmit={e => onReplySubmit(e, c.id)}
-                  className='mt-2 border-l pl-4'
+                  className='mt-2 border-l border-gray-200 pl-4 dark:border-gray-700'
                 >
                   <textarea
                     rows={2}
                     value={replyDrafts[c.id] || ''}
                     onChange={e => onReplyChange(c.id, e.target.value)}
-                    className='w-full rounded border p-2'
+                    className='w-full rounded border bg-gray-50 p-2 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
                     placeholder='Write a reply…'
                   />
                   <button
                     type='submit'
-                    className='mt-1 rounded bg-indigo-600 px-3 py-1 text-white'
+                    className='mt-1 rounded bg-indigo-600 px-3 py-1 text-white hover:bg-indigo-700'
                   >
                     Post Reply
                   </button>
                 </form>
               )}
               {c.replies.length > 0 && (
-                <ul className='mt-4 space-y-4 border-l pl-4'>
+                <ul className='mt-4 space-y-4 border-l border-gray-200 pl-4 dark:border-gray-700'>
                   {c.replies.map(r => (
                     <li key={r.id}>
-                      <p>
+                      <p className='text-gray-900 dark:text-gray-100'>
                         <strong>{r.authorName}</strong>{' '}
-                        <span className='text-sm text-gray-500'>
+                        <span className='text-sm text-gray-500 dark:text-gray-400'>
                           {new Date(r.createdAt).toLocaleString()}
                         </span>
                       </p>
-                      <p className='mt-1'>{r.text}</p>
+                      <p className='mt-1 text-gray-800 dark:text-gray-200'>
+                        {r.text}
+                      </p>
                     </li>
                   ))}
                 </ul>
@@ -262,12 +267,14 @@ export default function Giscus() {
       {/* New Comment Form */}
       {hasSavedEmail && (
         <form onSubmit={onCommentSubmit} className='mt-6'>
-          <h4 className='mb-2 font-semibold text-gray-800'>Leave a comment</h4>
+          <h4 className='mb-2 font-semibold text-gray-900 dark:text-gray-100'>
+            Leave a comment
+          </h4>
           <textarea
             rows={3}
             value={draft}
             onChange={e => setDraft(e.target.value)}
-            className='mb-2 w-full rounded border p-2'
+            className='mb-2 w-full rounded border bg-gray-50 p-2 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
             placeholder={
               hasCommented ? 'You’ve already commented.' : 'Write your comment…'
             }
