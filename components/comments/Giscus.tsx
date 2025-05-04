@@ -26,10 +26,10 @@ export default function Giscus() {
   const [activeReply, setActiveReply] = useState<string | null>(null);
   const [likers, setLikers] = useState<string[]>([]);
 
-  const EMAIL_KEY = 'giscus:email';
+  const EMAIL_KEY = 'giscus_email';
   const path = typeof window !== 'undefined' ? window.location.pathname : '';
-  const COMMENTS_KEY = `giscus:comments:${path}`;
-  const LIKERS_KEY = `giscus:likers:${path}`;
+  const COMMENTS_KEY = `comments_${path}`;
+  const LIKERS_KEY = `likers_${path}`;
 
   // Email validation and name derivation
   const validateEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
@@ -40,7 +40,7 @@ export default function Giscus() {
       .map(w => w.charAt(0).toUpperCase() + w.slice(1))
       .join(' ');
 
-  // Load stored data once
+  // Load from localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const storedEmail = localStorage.getItem(EMAIL_KEY);
@@ -54,7 +54,7 @@ export default function Giscus() {
     if (rawL) setLikers(JSON.parse(rawL));
   }, []);
 
-  // Persist helpers
+  // Persist via localStorage
   const persistEmail = (e: string) => {
     localStorage.setItem(EMAIL_KEY, e);
     setHasSavedEmail(true);
@@ -73,7 +73,8 @@ export default function Giscus() {
     evt.preventDefault();
     const trimmed = email.trim();
     if (!validateEmail(trimmed)) {
-      return alert('Please enter a valid email.');
+      alert('Please enter a valid email.');
+      return;
     }
     persistEmail(trimmed);
   };
@@ -83,12 +84,18 @@ export default function Giscus() {
 
   const onCommentSubmit = (evt: FormEvent) => {
     evt.preventDefault();
-    if (!hasSavedEmail) return alert('Save your email first.');
+    if (!hasSavedEmail) {
+      alert('Please save your email first.');
+      return;
+    }
     const text = draft.trim();
     if (!text) return;
-    if (hasCommented) return alert('You’ve already commented.');
+    if (hasCommented) {
+      alert('You’ve already commented.');
+      return;
+    }
     const c: Comment = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      id: `${Date.now()}-${Math.random()}`,
       authorEmail: email,
       authorName: nameFromEmail(email),
       text,
@@ -100,7 +107,10 @@ export default function Giscus() {
   };
 
   const onLike = () => {
-    if (!hasSavedEmail) return alert('Save your email first.');
+    if (!hasSavedEmail) {
+      alert('Please save your email first.');
+      return;
+    }
     if (hasLiked) return;
     persistLikers([email, ...likers]);
   };
@@ -110,11 +120,14 @@ export default function Giscus() {
     setReplyDrafts(prev => ({ ...prev, [cid]: val }));
   const onReplySubmit = (evt: FormEvent, cid: string) => {
     evt.preventDefault();
-    if (!hasSavedEmail) return alert('Save your email first.');
+    if (!hasSavedEmail) {
+      alert('Please save your email first.');
+      return;
+    }
     const text = (replyDrafts[cid] || '').trim();
     if (!text) return;
     const r: Reply = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      id: `${Date.now()}-${Math.random()}`,
       authorEmail: email,
       authorName: nameFromEmail(email),
       text,
@@ -136,7 +149,7 @@ export default function Giscus() {
 
   return (
     <div className='mx-auto max-w-xl rounded border bg-white p-4 dark:bg-gray-800'>
-      {/* Header with both counts */}
+      {/* Header */}
       <div className='mb-4 flex items-center justify-between'>
         <h3 className='text-xl'>
           Comments: <strong>{comments.length}</strong> | Blog Likes:{' '}
@@ -145,25 +158,21 @@ export default function Giscus() {
         <button
           onClick={onLike}
           disabled={!hasSavedEmail || hasLiked}
-          className={`flex items-center space-x-1 ${
-            !hasSavedEmail || hasLiked
-              ? 'cursor-not-allowed opacity-50'
-              : 'text-blue-600'
-          }`}
+          className='text-blue-600'
         >
-          <span>👍</span>
+          👍
         </button>
       </div>
 
-      {/* Email entry */}
+      {/* Email Form */}
       {!hasSavedEmail ? (
         <form onSubmit={onEmailSubmit} className='mb-6'>
           <input
             type='text'
-            placeholder='Type your full email, then click Save'
             value={email}
             onChange={e => setEmail(e.target.value)}
             className='w-full rounded border p-2'
+            placeholder='Your email'
           />
           <button
             type='submit'
@@ -178,93 +187,91 @@ export default function Giscus() {
         </p>
       )}
 
-      {/* Comments & Replies */}
-      <ul className='mb-6 space-y-8'>
-        {comments.length === 0 && <li>No comments yet.</li>}
-        {comments.map(c => (
-          <li key={c.id} className='border-b pb-4'>
-            <div className='flex items-start justify-between'>
-              <div>
-                <p>
-                  <strong>{c.authorName}</strong>{' '}
-                  <span className='text-sm text-gray-500'>
-                    {new Date(c.createdAt).toLocaleString()}
-                  </span>
-                </p>
-                <p className='mt-1'>{c.text}</p>
+      {/* Comments List */}
+      <ul className='mb-6 space-y-6'>
+        {comments.length === 0 ? (
+          <li>No comments yet.</li>
+        ) : (
+          comments.map(c => (
+            <li key={c.id} className='border-b pb-4'>
+              <div className='flex items-start justify-between'>
+                <div>
+                  <p>
+                    <strong>{c.authorName}</strong>{' '}
+                    <span className='text-sm text-gray-500'>
+                      {new Date(c.createdAt).toLocaleString()}
+                    </span>
+                  </p>
+                  <p className='mt-1'>{c.text}</p>
+                </div>
+                {hasSavedEmail && c.authorEmail === email && (
+                  <button
+                    onClick={() => onDeleteComment(c.id)}
+                    className='text-sm text-red-600 hover:underline'
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
-              {hasSavedEmail && c.authorEmail === email && (
-                <button
-                  onClick={() => onDeleteComment(c.id)}
-                  className='text-sm text-red-600 hover:underline'
-                >
-                  Delete
-                </button>
-              )}
-            </div>
-
-            <button
-              onClick={() => openReplyBox(c.id)}
-              className='mt-2 text-sm text-blue-600'
-            >
-              Reply
-            </button>
-
-            {activeReply === c.id && (
-              <form
-                onSubmit={e => onReplySubmit(e, c.id)}
-                className='mt-2 border-l pl-4'
+              <button
+                onClick={() => openReplyBox(c.id)}
+                className='mt-2 text-sm text-blue-600'
               >
-                <textarea
-                  rows={2}
-                  value={replyDrafts[c.id] || ''}
-                  onChange={e => onReplyChange(c.id, e.target.value)}
-                  placeholder='Write a reply…'
-                  className='w-full rounded border p-2'
-                />
-                <button
-                  type='submit'
-                  className='mt-1 rounded bg-indigo-600 px-3 py-1 text-white'
+                Reply
+              </button>
+              {activeReply === c.id && (
+                <form
+                  onSubmit={e => onReplySubmit(e, c.id)}
+                  className='mt-2 border-l pl-4'
                 >
-                  Post Reply
-                </button>
-              </form>
-            )}
-
-            {c.replies.length > 0 && (
-              <ul className='mt-4 space-y-4 border-l pl-4'>
-                {c.replies.map(r => (
-                  <li key={r.id}>
-                    <p>
-                      <strong>{r.authorName}</strong>{' '}
-                      <span className='text-sm text-gray-500'>
-                        {new Date(r.createdAt).toLocaleString()}
-                      </span>
-                    </p>
-                    <p className='mt-1'>{r.text}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
+                  <textarea
+                    rows={2}
+                    value={replyDrafts[c.id] || ''}
+                    onChange={e => onReplyChange(c.id, e.target.value)}
+                    className='w-full rounded border p-2'
+                    placeholder='Write a reply…'
+                  />
+                  <button
+                    type='submit'
+                    className='mt-1 rounded bg-indigo-600 px-3 py-1 text-white'
+                  >
+                    Post Reply
+                  </button>
+                </form>
+              )}
+              {c.replies.length > 0 && (
+                <ul className='mt-4 space-y-4 border-l pl-4'>
+                  {c.replies.map(r => (
+                    <li key={r.id}>
+                      <p>
+                        <strong>{r.authorName}</strong>{' '}
+                        <span className='text-sm text-gray-500'>
+                          {new Date(r.createdAt).toLocaleString()}
+                        </span>
+                      </p>
+                      <p className='mt-1'>{r.text}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
+        )}
       </ul>
 
-      {/* New comment form at the bottom */}
+      {/* New Comment Form */}
       {hasSavedEmail && (
         <form onSubmit={onCommentSubmit} className='mt-6'>
-          <h4 className='mb-2 font-semibold text-gray-800 dark:text-gray-200'>
-            Leave a comment
-          </h4>
+          <h4 className='mb-2 font-semibold text-gray-800'>Leave a comment</h4>
           <textarea
             rows={3}
             value={draft}
             onChange={e => setDraft(e.target.value)}
+            className='mb-2 w-full rounded border p-2'
             placeholder={
               hasCommented ? 'You’ve already commented.' : 'Write your comment…'
             }
             disabled={hasCommented}
-            className='mb-2 w-full rounded border p-2'
           />
           <button
             type='submit'
