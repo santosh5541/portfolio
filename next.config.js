@@ -1,5 +1,3 @@
-// next.config.js
-
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -32,17 +30,7 @@ const nextConfig = {
         https://www.googletagmanager.com
         https://www.google-analytics.com
         https://client.crisp.chat;
-      script-src-elem 'self' 'unsafe-inline'
-        https://giscus.app
-        https://www.googletagmanager.com
-        https://www.google-analytics.com
-        https://client.crisp.chat;
-      style-src 'self' 'unsafe-inline'
-        https://client.crisp.chat
-        https://giscus.app;
-      style-src-elem 'self' 'unsafe-inline'
-        https://client.crisp.chat
-        https://giscus.app;
+      style-src 'self' 'unsafe-inline' https://client.crisp.chat https://giscus.app;
       img-src * blob: data:;
       media-src 'none';
       connect-src *;
@@ -78,8 +66,7 @@ const nextConfig = {
     ];
   },
 
-  webpack: (config, { dev, isServer }) => {
-    // File-loader for images/video
+  webpack: (config, { dev: _dev, isServer: _isServer }) => {
     config.module.rules.push({
       test: /\.(png|jpe?g|gif|mp4)$/i,
       use: [
@@ -93,25 +80,10 @@ const nextConfig = {
       ],
     });
 
-    // SVGR for inline SVGs
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
-
-    // Swap React → Preact in client production builds
-    if (!dev && !isServer) {
-      config.resolve.alias = {
-        ...(config.resolve.alias || {}),
-        react: 'preact/compat',
-        'react-dom': 'preact/compat',
-        'react-dom/test-utils': 'preact/test-utils',
-        'react/jsx-runtime': 'preact/jsx-runtime',
-        'react/jsx-dev-runtime': 'preact/jsx-dev-runtime',
-        'preact/compat/jsx-runtime.js': 'preact/jsx-runtime',
-        'preact/compat/jsx-dev-runtime.js': 'preact/jsx-dev-runtime',
-      };
-    }
 
     return config;
   },
