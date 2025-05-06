@@ -35,13 +35,6 @@ You can read more about it [here](https://github.com/Microsoft/react-native-code
 
 Let's get started by first creating standard deployments for CodePush in AppCenter.
 
-<i>
-  I'll be assuming that you already know how to log in with AppCenter and create
-  or link a new Android/iOS app, if you don't then please check out
-  adding/linking part of this guide
-  [here](https://karanpratapsingh.com/blog/continuous-integration-appcenter-react-native)
-</i>
-
 - Navigate to `Codepush` under `Distribute` and click on `Create Standard Deployment`
 
 ![navigate-deployment](https://user-images.githubusercontent.com/29705703/81784621-c41acb00-951a-11ea-998a-54983c0a0f5b.png)
@@ -230,7 +223,7 @@ appcenter codepush release-react -a <user>/<app> -d <environment>
 For Example:
 
 ```bash
-appcenter codepush release-react -a Karan-Pratap-Singh/CodePushDemo -d Staging
+appcenter codepush release-react -a santosh-luitel/CodePushDemo -d Staging
 ```
 
 <i>
@@ -245,8 +238,8 @@ Typing these might get tedious, so what I like to do is add these scripts to my 
 
 ```json
 "scripts": {
-  "codepush:ios": "appcenter codepush release-react -a Karan-Pratap-Singh/CodePushDemo -d Staging",
-  "codepush:android": "appcenter codepush release-react -a Karan-Pratap-Singh/CodePushDemo-Android -d Staging"
+  "codepush:ios": "appcenter codepush release-react -a santosh-lutiel/CodePushDemo -d Staging",
+  "codepush:android": "appcenter codepush release-react -a santosh-lutiel/CodePushDemo-Android -d Staging"
 }
 ```
 

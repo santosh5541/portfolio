@@ -21,10 +21,6 @@ export const contact: Contact = {
   links: {
     github: 'https://github.com/santosh5541',
     linkedin: 'https://www.linkedin.com/in/santosh-luitel-b31b62201/',
-    // googlescholar:'https://scholar.google.com/citations?user=8wIfeAsAAAAJ&hl=en',
-    // twitter: 'https://twitter.com/karan_6864',
-    // youtube: 'https://www.youtube.com/c/KaranPratapSingh',
     email: 'mailto:santoshluitel19@outlook.com',
-    // buymeacoffee: 'https://www.buymeacoffee.com/karanps',
   },
 };
