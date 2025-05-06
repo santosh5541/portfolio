@@ -15,11 +15,11 @@ type Props = {
 export default function NewsPost({ post, contentHtml, error }: Props) {
   if (error) {
     return (
-      <main className='mx-auto max-w-4xl py-12 px-4 text-red-400'>
-        <h1 className='text-3xl font-bold text-red-300'>Oops!</h1>
-        <p className='text-red-200'>{error}</p>
+      <main className='mx-auto max-w-4xl py-12 px-4 text-red-600'>
+        <h1 className='text-3xl font-bold text-red-500'>Oops!</h1>
+        <p className='mt-2 text-gray-800 dark:text-gray-200'>{error}</p>
         <Link href='/news'>
-          <a className='mt-4 inline-block text-blue-400 underline'>
+          <a className='mt-4 inline-block text-blue-600 underline'>
             Back to news list
           </a>
         </Link>
@@ -32,10 +32,12 @@ export default function NewsPost({ post, contentHtml, error }: Props) {
   return (
     <main className='mx-auto max-w-4xl py-12 px-4'>
       {/* Title */}
-      <h1 className='mb-4 text-4xl font-bold text-white'>{post.title}</h1>
+      <h1 className='mb-4 text-4xl font-bold text-gray-900 dark:text-white'>
+        {post.title}
+      </h1>
 
       {/* Meta */}
-      <p className='mb-8 text-sm text-gray-400'>
+      <p className='mb-8 text-sm text-gray-600 dark:text-gray-400'>
         {new Date(post.published_at).toLocaleString()} — {post.source}
       </p>
 
@@ -53,26 +55,24 @@ export default function NewsPost({ post, contentHtml, error }: Props) {
       )}
 
       {/* Summary */}
-      <div className='mb-12'>
-        <p className='text-lg leading-relaxed text-gray-200'>
-          {post.description}
-        </p>
-      </div>
+      <p className='mb-12 text-lg leading-relaxed text-gray-800 dark:text-gray-200'>
+        {post.description}
+      </p>
 
       {/* Full article */}
       {contentHtml ? (
         <article
-          className='prose prose-lg max-w-none text-gray-200 dark:text-gray-200'
+          className='prose prose-lg max-w-none text-gray-800 dark:text-gray-200'
           dangerouslySetInnerHTML={{ __html: contentHtml }}
         />
       ) : (
-        <p className='text-gray-200'>
+        <p className='text-gray-800 dark:text-gray-200'>
           Couldn’t parse the full article.{' '}
           <a
             href={post.url}
             target='_blank'
             rel='noopener noreferrer'
-            className='text-blue-400 underline'
+            className='text-blue-600 underline'
           >
             Read on the source site »
           </a>
@@ -82,7 +82,9 @@ export default function NewsPost({ post, contentHtml, error }: Props) {
       {/* Back link */}
       <p className='mt-12'>
         <Link href='/news'>
-          <a className='text-blue-400 underline'>← Back to news</a>
+          <a className='text-gray-900 underline dark:text-gray-200'>
+            ← Back to news
+          </a>
         </Link>
       </p>
     </main>
