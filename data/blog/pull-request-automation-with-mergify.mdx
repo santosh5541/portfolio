@@ -8,7 +8,7 @@ images: ['/static/blogs/pull-request-automation-with-mergify.jpeg']
 authors: ['default']
 ---
 
-In this article, we'll be taking a look at [Mergify](https://mergify.com/?utm_source=article&utm_medium=dev.to&utm_campaign=Karan) which is a pull request automation service, triggering actions when a pull request matches defined criteria.
+In this article, we'll be taking a look at [Mergify](https://mergify.com/?utm_source=article&utm_medium=dev.to&utm_campaign=santoshluitel) which is a pull request automation service, triggering actions when a pull request matches defined criteria.
 
 ### Why do we need it?
 
@@ -43,7 +43,7 @@ Using a merge queue solves that problem by updating any pull request that is not
 
 This basically eliminates manual merges and help us plan our release better by prioritising important pull requests.
 
-_Learn more about merge queues in detail [here](https://blog.mergify.com/what-is-a-merge-queue/?utm_source=article&utm_medium=dev.to&utm_campaign=Karan)_
+_Learn more about merge queues in detail [here](https://blog.mergify.com/what-is-a-merge-queue/?utm_source=article&utm_medium=dev.to&utm_campaign=santoshluitel)_
 
 - **Automatic Updates and Backports**
 
@@ -67,11 +67,11 @@ We're in! So this is the dashboard, and here we will be able to create configura
 
 Now, let's create our configuration file `.mergify.yml`.
 
-_Note: Make sure to checkout full reference [here](https://docs.mergify.com/configuration/?utm_source=article&utm_medium=dev.to&utm_campaign=Karan)._
+_Note: Make sure to checkout full reference [here](https://docs.mergify.com/configuration/?utm_source=article&utm_medium=dev.to&utm_campaign=santoshluitel)._
 
 ```yaml
 pull_request_rules:
-  - name: assign PRs with Txt files modified to karan
+  - name: assign PRs with Txt files modified to santoshluitel
     conditions:
       - files~=\.txt$
     actions:
