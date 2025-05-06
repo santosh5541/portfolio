@@ -1,3 +1,4 @@
+// pages/news/[id].tsx
 import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import { JSDOM } from 'jsdom';
@@ -14,29 +15,31 @@ type Props = {
 export default function NewsPost({ post, contentHtml, error }: Props) {
   if (error) {
     return (
-      <main className='prose mx-auto max-w-4xl py-12 px-4 text-red-600 dark:prose-invert'>
-        <h1>Oops!</h1>
-        <p>{error}</p>
+      <main className='mx-auto max-w-4xl py-12 px-4 text-red-400'>
+        <h1 className='text-3xl font-bold text-red-300'>Oops!</h1>
+        <p className='text-red-200'>{error}</p>
         <Link href='/news'>
-          <a className='text-blue-600 underline'>Back to news list</a>
+          <a className='mt-4 inline-block text-blue-400 underline'>
+            Back to news list
+          </a>
         </Link>
       </main>
     );
   }
 
-  if (!post) {
-    return null;
-  }
+  if (!post) return null;
 
   return (
     <main className='mx-auto max-w-4xl py-12 px-4'>
-      <h1 className='mb-4 text-4xl font-bold text-gray-900 dark:text-white'>
-        {post.title}
-      </h1>
-      <p className='mb-8 text-sm text-gray-600 dark:text-gray-400'>
+      {/* Title */}
+      <h1 className='mb-4 text-4xl font-bold text-white'>{post.title}</h1>
+
+      {/* Meta */}
+      <p className='mb-8 text-sm text-gray-400'>
         {new Date(post.published_at).toLocaleString()} — {post.source}
       </p>
 
+      {/* Hero Image */}
       {post.image && (
         <div className='relative mb-8 h-80 w-full overflow-hidden rounded-lg shadow-lg'>
           <Image
@@ -49,34 +52,37 @@ export default function NewsPost({ post, contentHtml, error }: Props) {
         </div>
       )}
 
-      <div className='prose prose-lg mb-12 dark:prose-invert'>
-        <p>{post.description}</p>
+      {/* Summary */}
+      <div className='mb-12'>
+        <p className='text-lg leading-relaxed text-gray-200'>
+          {post.description}
+        </p>
       </div>
 
+      {/* Full article */}
       {contentHtml ? (
         <article
-          className='prose prose-lg mb-12 dark:prose-invert'
+          className='prose prose-lg max-w-none text-gray-200 dark:text-gray-200'
           dangerouslySetInnerHTML={{ __html: contentHtml }}
         />
       ) : (
-        <p className='text-gray-700 dark:text-gray-300'>
+        <p className='text-gray-200'>
           Couldn’t parse the full article.{' '}
           <a
             href={post.url}
             target='_blank'
             rel='noopener noreferrer'
-            className='text-blue-600 underline'
+            className='text-blue-400 underline'
           >
             Read on the source site »
           </a>
         </p>
       )}
 
-      <p className='mt-12 text-sm'>
+      {/* Back link */}
+      <p className='mt-12'>
         <Link href='/news'>
-          <a className='text-gray-800 underline dark:text-gray-200'>
-            ← Back to news
-          </a>
+          <a className='text-blue-400 underline'>← Back to news</a>
         </Link>
       </p>
     </main>
@@ -87,7 +93,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   params,
 }) => {
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
-
   if (!id || typeof id !== 'string') {
     return { props: { error: 'Invalid article ID.' } };
   }
@@ -95,9 +100,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   try {
     const post = await fetchNewsById(id);
     const res = await fetch(post.url);
-    if (!res.ok) {
-      throw new Error('Fetch article failed');
-    }
+    if (!res.ok) throw new Error('Fetch article failed');
     const html = await res.text();
     const dom = new JSDOM(html, { url: post.url });
     const article = new Readability(dom.window.document).parse();
