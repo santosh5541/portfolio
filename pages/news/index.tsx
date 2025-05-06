@@ -1,3 +1,4 @@
+// pages/news/index.tsx
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -15,8 +16,7 @@ export default function NewsPage({ news }: Props) {
       <main className='prose mx-auto max-w-3xl py-12 dark:prose-invert'>
         <h1>Technology News</h1>
         <p>
-          Sorry, we’re unable to load news right now. Please try again in a few
-          minutes.
+          Sorry, we’re unable to load news right now. Please try again soon.
         </p>
       </main>
     );
@@ -36,7 +36,7 @@ export default function NewsPage({ news }: Props) {
         {current.map(item => (
           <li
             key={item.id}
-            className='fade-in overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-lg dark:border-gray-700 dark:bg-gray-800'
+            className='fade-in overflow-hidden rounded-xl border bg-white shadow-sm transition-shadow hover:shadow-lg dark:bg-gray-800'
           >
             <Link href={`/news/${item.id}`}>
               <a className='block h-full'>
@@ -95,6 +95,6 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const news = await fetchLatestNews();
   return {
     props: { news },
-    revalidate: 300,
+    revalidate: 60 * 60,
   };
 };
