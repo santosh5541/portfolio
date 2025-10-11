@@ -153,4 +153,14 @@ In short, it was built to centralize your battery data into one lightweight serv
     stack: [Stack.typescript, Stack.html, Stack.css],
     subProjects: [],
   },
+  {
+    title: 'NLP to SQL Dashboard',
+    slug: 'nlp-sql-dashboard',
+    banner: '/static/projects/nlp/nlp.png',
+    description:
+      'Built an interactive web dashboard using React (Create React App) that transforms natural language queries into SQL and visualizes the results. Users type in English (e.g., “Show top 10 customers by region”), and the system parses it, generates SQL, executes it on a database, and displays results in tables and charts. Includes components for query input, result rendering, charting, and backend API integration.',
+    repository: 'https://github.com/santosh5541/nlp-sql-dashboard',
+    stack: [Stack.react, Stack.javascript, Stack.html, Stack.css, Stack.sql],
+    subProjects: [],
+  },
 ];
