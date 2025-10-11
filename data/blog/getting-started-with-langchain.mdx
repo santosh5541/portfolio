@@ -1,0 +1,315 @@
+---
+title: 'Getting Started with LangChain for AI-Powered Applications'
+date: '2025-10-10'
+tags: ['python', 'langchain', 'ai', 'llm', 'tutorial']
+draft: false
+summary: 'Learn how to build intelligent AI applications using LangChain with LLMs, memory, and agents.'
+images: ['/static/blogs/into.jpg']
+authors: ['default']
+---
+
+Hey, welcome back. This article is part of the AI development series.
+
+LangChain is a powerful framework for building applications powered by large language models (LLMs). It provides tools to create chatbots, question-answering systems, agents, and more with minimal boilerplate code.
+
+![LangChain Architecture](/static/blogs/arct.jpg)
+
+## Why LangChain?
+
+🔗 **Modular Components**: Chain together prompts, models, and memory in flexible ways.
+
+🤖 **Multi-Model Support**: Works with OpenAI, Anthropic, Hugging Face, and more.
+
+💾 **Built-in Memory**: Easily add conversation history and context to your applications.
+
+🛠️ **Agent Framework**: Create autonomous agents that can use tools and make decisions.
+
+## Prerequisites
+
+- Python 3.8 or higher installed
+- An OpenAI API key (or other LLM provider)
+- Basic understanding of Python
+- Familiarity with APIs and async programming (helpful but not required)
+
+## Installation
+
+Let's start by creating a new project and installing dependencies:
+
+```bash
+mkdir langchain-app
+cd langchain-app
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+Install LangChain and OpenAI:
+
+```bash
+pip install langchain openai python-dotenv
+```
+
+Create a `.env` file for your API key:
+
+```env
+OPENAI_API_KEY=your_api_key_here
+```
+
+![Project Setup](/static/blogs/setuplc.jpg)
+
+## Your first LangChain application
+
+Let's create a simple `app.py` file:
+
+```python
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Initialize the LLM
+llm = OpenAI(temperature=0.7)
+
+# Create a prompt template
+template = """
+You are a helpful assistant that explains concepts simply.
+
+Question: {question}
+
+Answer:"""
+
+prompt = PromptTemplate(
+    input_variables=["question"],
+    template=template
+)
+
+# Create a chain
+chain = LLMChain(llm=llm, prompt=prompt)
+
+# Run the chain
+response = chain.run(question="What is machine learning?")
+print(response)
+```
+
+Run your application:
+
+```bash
+python app.py
+```
+
+You should see an AI-generated explanation of machine learning!
+
+![Basic Chain Flow](/static/blogs/basiclc.jpg)
+
+## Adding conversation memory
+
+Let's make our application remember previous interactions. Update `app.py`:
+
+```python
+from langchain.llms import OpenAI
+from langchain.chains import ConversationChain
+from langchain.memory import ConversationBufferMemory
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Initialize LLM with memory
+llm = OpenAI(temperature=0.7)
+memory = ConversationBufferMemory()
+
+conversation = ConversationChain(
+    llm=llm,
+    memory=memory,
+    verbose=True
+)
+
+# Have a conversation
+print(conversation.predict(input="Hi, my name is Alice"))
+print(conversation.predict(input="What's my name?"))
+print(conversation.predict(input="What are some good Python libraries?"))
+```
+
+The `verbose=True` flag will show you how LangChain constructs prompts with memory!
+
+![Memory Flow Diagram](/static/blogs/mf.jpg)
+
+## Building a document Q&A system
+
+Let's create a more practical application that answers questions about documents:
+
+```python
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.chains import RetrievalQA
+from langchain.llms import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Load and split documents
+loader = TextLoader('document.txt')
+documents = loader.load()
+
+text_splitter = CharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200
+)
+texts = text_splitter.split_documents(documents)
+
+# Create embeddings and vector store
+embeddings = OpenAIEmbeddings()
+vectorstore = FAISS.from_documents(texts, embeddings)
+
+# Create QA chain
+qa_chain = RetrievalQA.from_chain_type(
+    llm=OpenAI(temperature=0),
+    chain_type="stuff",
+    retriever=vectorstore.as_retriever()
+)
+
+# Ask questions
+query = "What is the main topic of this document?"
+response = qa_chain.run(query)
+print(response)
+```
+
+Create a sample `document.txt` file with some content to test with!
+
+![Vector Store Retrieval](/static/blogs/vector.jpg)
+
+_How document embeddings work in LangChain_
+
+## Creating an agent with tools
+
+Agents can use tools to perform actions. Here's an example with a calculator and search:
+
+```python
+from langchain.agents import load_tools, initialize_agent, AgentType
+from langchain.llms import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+llm = OpenAI(temperature=0)
+
+# Load tools
+tools = load_tools(["llm-math"], llm=llm)
+
+# Initialize agent
+agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True
+)
+
+# Run the agent
+result = agent.run("What is 25 raised to the power of 0.5?")
+print(result)
+```
+
+The agent will break down the problem, use the calculator tool, and provide an answer!
+
+![Agent Architecture](/static/blogs/agent.jpg)
+
+## Structuring your project
+
+For production applications, organize your code like this:
+
+```
+langchain-app/
+├── src/
+│   ├── chains/
+│   │   └── qa_chain.py
+│   ├── agents/
+│   │   └── calculator_agent.py
+│   ├── prompts/
+│   │   └── templates.py
+│   └── utils/
+│       └── document_loader.py
+├── data/
+│   └── documents/
+├── .env
+├── requirements.txt
+└── main.py
+```
+
+![Project Structure](/static/blogs/ps.jpg)
+
+## Using streaming responses (Bonus)
+
+For better UX, stream responses as they're generated:
+
+```python
+from langchain.llms import OpenAI
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from dotenv import load_dotenv
+
+load_dotenv()
+
+llm = OpenAI(
+    temperature=0.7,
+    streaming=True,
+    callbacks=[StreamingStdOutCallbackHandler()]
+)
+
+response = llm("Write a short poem about Python programming")
+```
+
+This will print tokens as they arrive, creating a typewriter effect!
+
+## Custom chains (Bonus)
+
+Create reusable custom chains for your specific use cases:
+
+```python
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain.llms import OpenAI
+
+class CodeReviewChain:
+    def __init__(self):
+        self.llm = OpenAI(temperature=0)
+        self.prompt = PromptTemplate(
+            input_variables=["code", "language"],
+            template="""
+            Review the following {language} code and provide feedback:
+
+            {code}
+
+            Provide:
+            1. Issues found
+            2. Suggestions for improvement
+            3. Security concerns
+            """
+        )
+        self.chain = LLMChain(llm=self.llm, prompt=self.prompt)
+
+    def review(self, code, language="Python"):
+        return self.chain.run(code=code, language=language)
+
+# Usage
+reviewer = CodeReviewChain()
+feedback = reviewer.review("""
+def add(a, b):
+    return a + b
+""")
+print(feedback)
+```
+
+![Custom Chain Example](/static/blogs/cc.jpg)
+
+## Next steps
+
+With that, you should have a solid foundation for building AI-powered applications with LangChain. You can expand this by:
+
+- Integrating different LLM providers (Anthropic, Hugging Face)
+- Building more sophisticated agents with multiple tools
+- Creating RAG (Retrieval Augmented Generation) applications
+- Implementing custom callbacks and monitoring
+- Deploying your applications with FastAPI or Streamlit
+
+Check out the [official LangChain documentation](https://python.langchain.com/) to explore more advanced features!
