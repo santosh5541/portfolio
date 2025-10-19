@@ -30,10 +30,12 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Open Sans', ...defaultTheme.fontFamily.sans],
+        // Add this line to define the new cursive font
+        cursive: ['Allura', 'cursive'],
       },
       colors: {
         primary: colors.cyan,
-        gray: colors.neutral,
+        gray: colors.gray,
         'placeholder-light': '#F0F0F0',
         'placeholder-dark': '#252525',
       },
