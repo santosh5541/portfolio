@@ -14,7 +14,7 @@ export default function NewsPage({ news }: Props) {
   if (news.length === 0) {
     return (
       <main className='prose mx-auto max-w-3xl py-12 dark:prose-invert'>
-        <h1>Technology News</h1>
+        <h1>AI News</h1>
         <p>
           Sorry, we’re unable to load news right now. Please try again soon.
         </p>
@@ -29,7 +29,7 @@ export default function NewsPage({ news }: Props) {
   return (
     <main className='mx-auto max-w-6xl py-12 px-4'>
       <h1 className='mb-8 text-3xl font-bold text-gray-900 dark:text-gray-100'>
-        Technology News
+        AI News
       </h1>
 
       <ul className='grid list-none grid-cols-1 gap-8 p-0 sm:grid-cols-2 lg:grid-cols-3'>
@@ -92,7 +92,14 @@ export default function NewsPage({ news }: Props) {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const news = await fetchLatestNews();
+  let news: NewsItem[] = [];
+  try {
+    news = await fetchLatestNews();
+  } catch {
+    // A failed news fetch must not fail the build; the page
+    // renders its "unable to load news" state instead.
+    news = [];
+  }
   return {
     props: { news },
     revalidate: 60 * 60,
